@@ -34,7 +34,7 @@ def synthetic_panel(symbols=("AAA-USD",), n=600, seed=0):
 
 def make(name):
     cls = REGISTRY[name]
-    syms = ["AAA-USD", "BBB-USD"] if name == "CorrReversion" else ["AAA-USD"]
+    syms = ["AAA-USD", "BBB-USD"] if name in ("CorrReversion", "OilSpreadReversion") else ["AAA-USD"]
     kw = {"entry_corr_low": 0.95} if name == "CorrReversion" else {}  # make it trade on synthetic data
     return cls(symbols=syms, **kw), syms
 
