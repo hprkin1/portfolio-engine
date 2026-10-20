@@ -37,6 +37,7 @@ class ExecConfig:
     execution: str = "next_open"        # "same_close" reproduces the old (look-ahead) behaviour
     intrabar_stops: bool = True         # check sl/tp against High/Low
     costs: CostModel | str = "auto"     # "auto" -> per asset class, or a preset name / CostModel
+    rebalance_band: float = 0.0         # target-weight mode: skip rebalances smaller than this (abs weight)
 
     def cost_model(self, symbols: list[str]) -> CostModel:
         if isinstance(self.costs, CostModel):
@@ -69,6 +70,24 @@ class SleeveResult:
         return self.equity.pct_change().fillna(0)
 
 
+def _apply_band(target: pd.DataFrame, band: float) -> pd.DataFrame:
+    """Only re-send a target when it moved more than `band` from the last one sent
+    (or crossed to/from zero). Cuts turnover from small vol-targeting adjustments."""
+    out = target.copy() * float("nan")
+    for c in target:
+        last = 0.0
+        vals = target[c].to_numpy()
+        res = out[c].to_numpy().copy()
+        for i, v in enumerate(vals):
+            if v != v:  # NaN
+                continue
+            if abs(v - last) > band or (v == 0) != (last == 0) or (v * last < 0):
+                res[i] = v
+                last = v
+        out[c] = res
+    return out
+
+
 def _warmup_start(start: str, bars: int) -> str:
     return (pd.Timestamp(start) - pd.Timedelta(days=int(bars * 1.6) + 10)).strftime("%Y-%m-%d")
 
@@ -80,38 +99,51 @@ def backtest_strategy(strategy: BaseStrategy, capital: float = 100_000, start: s
         raise ValueError(f"execution must be one of {EXECUTION_MODES}")
     syms = strategy.symbols
     if panel is None:
-        panel = load_panel(syms, _warmup_start(start, strategy.WARMUP_BARS), end)
+        panel = load_panel(strategy.all_symbols, _warmup_start(start, strategy.WARMUP_BARS), end)
 
     ind, sig = strategy.run(panel)
     if config.execution != "same_close":
         sig = sig.shifted(1)
 
-    # trim warm-up period only AFTER indicators/signals are computed
+    # trim warm-up period only AFTER indicators/signals are computed; trade only `syms`
     keep = panel["Close"].index >= pd.Timestamp(start)
-    p = {k: v.loc[keep] for k, v in panel.items()}
-    sig = Signals(*(x.loc[keep] for x in (sig.entries, sig.exits, sig.short_entries, sig.short_exits)))
+    p = {k: v.loc[keep, syms] for k, v in panel.items()}
+    sig = sig.subset(keep)
 
     costs = config.cost_model(syms)
     n = len(syms)
-    kwargs = dict(
-        close=p["Close"],
-        entries=sig.entries, exits=sig.exits,
-        short_entries=sig.short_entries, short_exits=sig.short_exits,
-        price=p["Open"] if config.execution == "next_open" else p["Close"],
-        fees=costs.fee, slippage=costs.slippage,
-        init_cash=capital / n,      # each leg gets an equal slice of the sleeve
-        cash_sharing=False,
-        group_by=True if n > 1 else None,
-        freq="1D",
-    )
-    if config.intrabar_stops:
-        kwargs.update(open=p["Open"], high=p["High"], low=p["Low"])
-    if strategy.sl_stop:
-        kwargs["sl_stop"] = strategy.sl_stop
-    if strategy.tp_stop:
-        kwargs["tp_stop"] = strategy.tp_stop
-
-    pf = vbt.Portfolio.from_signals(**kwargs)
+    exec_price = p["Open"] if config.execution == "next_open" else p["Close"]
+    if sig.is_target:
+        # only trade when the target changes (by more than the band) - never drift-rebalance
+        target = _apply_band(sig.target, config.rebalance_band)
+        kwargs = dict(close=p["Close"], size=target, size_type="targetpercent", price=exec_price,
+                      fees=costs.fee, slippage=costs.slippage, init_cash=capital,
+                      cash_sharing=True, group_by=True if n > 1 else None,
+                      call_seq="auto" if n > 1 else None, freq="1D")
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        pf = vbt.Portfolio.from_orders(**kwargs)
+        ungrouped = vbt.Portfolio.from_orders(**{**kwargs, "group_by": None, "cash_sharing": False,
+                                                 "call_seq": None, "init_cash": capital}) if n > 1 else pf
+    else:
+        kwargs = dict(
+            close=p["Close"],
+            entries=sig.entries, exits=sig.exits,
+            short_entries=sig.short_entries, short_exits=sig.short_exits,
+            price=exec_price,
+            fees=costs.fee, slippage=costs.slippage,
+            init_cash=capital / n,      # each leg gets an equal slice of the sleeve
+            cash_sharing=False,
+            group_by=True if n > 1 else None,
+            freq="1D",
+        )
+        if config.intrabar_stops:
+            kwargs.update(open=p["Open"], high=p["High"], low=p["Low"])
+        if strategy.sl_stop:
+            kwargs["sl_stop"] = strategy.sl_stop
+        if strategy.tp_stop:
+            kwargs["tp_stop"] = strategy.tp_stop
+        pf = vbt.Portfolio.from_signals(**kwargs)
+        ungrouped = vbt.Portfolio.from_signals(**{**kwargs, "group_by": None}) if n > 1 else pf
     equity = pf.value()
     if isinstance(equity, pd.DataFrame):
         equity = equity.iloc[:, 0]
@@ -119,8 +151,7 @@ def backtest_strategy(strategy: BaseStrategy, capital: float = 100_000, start: s
 
     close = p["Close"]
     bench = (close / close.iloc[0]).mean(axis=1) * capital
-    positions = pf.positions.records_readable if n == 1 else \
-        vbt.Portfolio.from_signals(**{**kwargs, "group_by": None}).positions.records_readable
+    positions = ungrouped.positions.records_readable
     av = pf.asset_value(group_by=False) if n > 1 else pf.asset_value()
     av = av.to_frame() if isinstance(av, pd.Series) else av
     exposure = float((av.abs().sum(axis=1) > 0).mean())

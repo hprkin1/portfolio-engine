@@ -36,6 +36,9 @@ def make(name):
     cls = REGISTRY[name]
     syms = ["AAA-USD", "BBB-USD"] if name in ("CorrReversion", "OilSpreadReversion") else ["AAA-USD"]
     kw = {"entry_corr_low": 0.95} if name == "CorrReversion" else {}  # make it trade on synthetic data
+    if name == "OilTrendCarry":
+        s = cls(symbols=["AAA-USD"], signal_symbols=["BBB-USD"], trend_lb=60, carry_lb=20, vol_target=0.2)
+        return s, ["AAA-USD", "BBB-USD"]
     return cls(symbols=syms, **kw), syms
 
 
@@ -48,7 +51,9 @@ def test_no_lookahead(name):
     for cut in (200, 350, 500):
         trunc = {k: v.iloc[:cut] for k, v in panel.items()}
         _, part = strat.run(trunc)
-        for attr in ("entries", "exits", "short_entries", "short_exits"):
+        for attr in ("entries", "exits", "short_entries", "short_exits", "target"):
+            if getattr(full, attr) is None:
+                continue
             pd.testing.assert_frame_equal(getattr(part, attr), getattr(full, attr).iloc[:cut], check_freq=False)
 
 
@@ -114,3 +119,34 @@ def test_clean_drops_negative_prices():
 def test_unknown_param_rejected():
     with pytest.raises(ValueError):
         REGISTRY["ACMomentum"](long_sma=10)
+
+
+class HalfLong(BaseStrategy):
+    """Target 50% long from bar 10, flat from bar 20."""
+    DEFAULT_SYMBOLS = ["AAA-USD"]
+    WARMUP_BARS = 0
+
+    def indicators(self, panel):
+        return pd.DataFrame(index=panel["Close"].index)
+
+    def signals(self, panel, ind):
+        w = pd.Series(0.0, index=panel["Close"].index); w.iloc[10:20] = 0.5
+        return Signals(target=w.to_frame("AAA-USD"))
+
+
+def test_target_weight_mode():
+    panel = synthetic_panel()
+    cfg = ExecConfig("next_open", intrabar_stops=False, costs=CostModel(fee=0.0, slippage=0.0))
+    r = backtest_strategy(HalfLong(), 10_000, "2020-01-01", config=cfg, panel=panel)
+    o = r.portfolio.orders.records_readable
+    idx, op = panel["Close"].index, panel["Open"].iloc[:, 0]
+    assert list(o["Timestamp"]) == [idx[11], idx[21]]
+    assert o["Size"].iloc[0] * op.iloc[11] == pytest.approx(5_000, rel=1e-9)
+    assert r.equity.iloc[-1] == pytest.approx(5_000 + 5_000 * op.iloc[21] / op.iloc[11], rel=1e-9)
+
+
+def test_signal_symbols_not_traded():
+    panel = synthetic_panel(("AAA-USD", "BBB-USD"))
+    s = REGISTRY["OilTrendCarry"](symbols=["AAA-USD"], signal_symbols=["BBB-USD"], trend_lb=60, carry_lb=20)
+    r = backtest_strategy(s, 10_000, "2020-01-01", panel=panel)
+    assert list(r.portfolio.wrapper.columns) == ["AAA-USD"]
