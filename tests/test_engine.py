@@ -180,3 +180,58 @@ def test_inverse_vol_book(monkeypatch):
     d = book.weight_history.index[3]
     trunc = {n: r for n, r in book.sleeves.items()}
     assert pm.target_weights(trunc, d).round(10).equals(book.weight_history.loc[d].round(10))
+
+
+def _flip_strategy(sl=None):
+    class Flip(BaseStrategy):
+        DEFAULT_SYMBOLS = ["AAA-USD"]
+        WARMUP_BARS = 0
+
+        def indicators(self, panel):
+            c = panel["Close"].iloc[:, 0]
+            return pd.DataFrame({"m": c.diff(5)})
+
+        def signals(self, panel, ind):
+            up, dn = (ind["m"] > 0).to_frame("AAA-USD"), (ind["m"] < 0).to_frame("AAA-USD")
+            return Signals(up, dn, dn, up)
+    return Flip(sl_stop=sl)
+
+
+def test_stopsim_matches_vbt_without_stops():
+    """With no stops the purpose-built simulator must equal vectorbt exactly (fills, costs, shorts)."""
+    from engine.stopsim import simulate
+    panel = synthetic_panel(n=400)
+    cfg = ExecConfig("next_open", intrabar_stops=True, costs=CostModel(fee=0.0007, slippage=0.0003))
+    r = backtest_strategy(_flip_strategy(), 10_000, "2020-01-01", config=cfg, panel=panel)   # vbt path
+    _, sig = _flip_strategy().run(panel)
+    eq, pos, _, _ = simulate(panel, sig.shifted(1), 10_000, 0.0007, 0.0003)
+    assert np.allclose(eq.to_numpy(), r.equity.to_numpy(), rtol=1e-9)
+    assert len(pos[pos.Status == "Closed"]) == len(r.positions[r.positions.Status == "Closed"])
+
+
+def test_stop_ordering_and_reference():
+    """Signal at the open is processed before the intraday stop; stop is measured from the fill price."""
+    from engine.stopsim import simulate_column
+    #            bar0   bar1   bar2   bar3
+    o = np.array([100., 100., 101., 100.])
+    h = np.array([100., 101., 101., 100.])
+    l = np.array([100.,  99.5, 95.,  100.])
+    c = np.array([100., 100.5, 96., 100.])
+    T, F = True, False
+    ent = np.array([F, T, F, F]); ext = np.array([F, F, T, F])          # long at bar1 open, exit at bar2 open
+    eq, tr, _, _ = simulate_column(o, h, l, c, ent, ext, np.zeros(4, bool), np.zeros(4, bool), 1000, 0, 0, sl_stop=0.02)
+    # bar1 low 99.5 > 98 (2% below the 100 fill) -> no stop. bar2: exit signal at open 101 happens BEFORE the
+    # intraday low of 95 -> trade closes at 101 via signal, not stopped at 98.
+    assert len(tr) == 1 and tr[0][8] == "signal" and tr[0][4] == pytest.approx(101)
+    assert eq[-1] == pytest.approx(1010)
+    # Same path without the exit signal -> stopped at 98 on bar2 (opened at 101 > 98, so no gap)
+    eq, tr, _, _ = simulate_column(o, h, l, c, ent, np.zeros(4, bool), np.zeros(4, bool), np.zeros(4, bool),
+                                   1000, 0, 0, sl_stop=0.02)
+    assert tr[0][8] == "stop" and tr[0][4] == pytest.approx(98)
+
+
+def test_stop_strategy_uses_stopsim():
+    panel = synthetic_panel(n=300)
+    r = backtest_strategy(_flip_strategy(sl=0.02), 10_000, "2020-01-01", panel=panel)
+    assert r.portfolio is None and "Exit Reason" in r.positions
+    assert np.isfinite(r.equity).all() and r.metrics["Trades"] > 0

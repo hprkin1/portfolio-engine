@@ -58,7 +58,7 @@ class SleeveResult:
     capital: float
     equity: pd.Series
     benchmark: pd.Series
-    portfolio: vbt.Portfolio
+    portfolio: vbt.Portfolio | None   # None when the stop simulator (engine/stopsim.py) was used
     signals: Signals
     indicators: pd.DataFrame
     positions: pd.DataFrame
@@ -124,6 +124,18 @@ def backtest_strategy(strategy: BaseStrategy, capital: float = 100_000, start: s
         pf = vbt.Portfolio.from_orders(**kwargs)
         ungrouped = vbt.Portfolio.from_orders(**{**kwargs, "group_by": None, "cash_sharing": False,
                                                  "call_seq": None, "init_cash": capital}) if n > 1 else pf
+    elif config.execution == "next_open" and (strategy.sl_stop or strategy.tp_stop):
+        # vbt mis-orders stops vs open fills; use the purpose-built simulator (see engine/stopsim.py)
+        from .stopsim import simulate
+        equity, positions, fees_paid, exposure = simulate(
+            p, sig, capital, costs.fee, costs.slippage, strategy.sl_stop, strategy.tp_stop, config.intrabar_stops)
+        equity = equity.rename(strategy.name)
+        close = p["Close"]
+        bench = (close / close.iloc[0]).mean(axis=1) * capital
+        metrics = compute_metrics(equity, positions=positions, ppy=periods_per_year(close.index),
+                                  fees_paid=fees_paid, exposure=exposure, benchmark=bench)
+        return SleeveResult(strategy.name, strategy, capital, equity, bench.rename("Benchmark"), None,
+                            sig, ind, positions, metrics, config)
     else:
         kwargs = dict(
             close=p["Close"],
@@ -142,6 +154,8 @@ def backtest_strategy(strategy: BaseStrategy, capital: float = 100_000, start: s
             kwargs["sl_stop"] = strategy.sl_stop
         if strategy.tp_stop:
             kwargs["tp_stop"] = strategy.tp_stop
+        if strategy.sl_stop or strategy.tp_stop:
+            kwargs["stop_entry_price"] = "fillprice"   # vbt default is the entry bar's close
         pf = vbt.Portfolio.from_signals(**kwargs)
         ungrouped = vbt.Portfolio.from_signals(**{**kwargs, "group_by": None}) if n > 1 else pf
     equity = pf.value()

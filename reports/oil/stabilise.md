@@ -151,45 +151,41 @@ capital = equal dollars, never rebalanced. inverse_vol = equal risk budget per s
 
 |                                 |   CAGR % |   Ann. Vol % |   Sharpe |   Sortino |   Max DD % |   Calmar |   Max DD Days |
 |:--------------------------------|---------:|-------------:|---------:|----------:|-----------:|---------:|--------------:|
-| BTC only, capital               |    57.12 |        42.44 |     1.28 |      1.85 |     -33.6  |     1.7  |           561 |
-| BTC only, inverse-vol           |    56.5  |        41.62 |     1.28 |      1.81 |     -31.29 |     1.81 |           532 |
-| BTC + oil, capital              |    48.6  |        38.48 |     1.22 |      1.77 |     -32.14 |     1.51 |           567 |
-| BTC + oil, inverse-vol          |    24.78 |        17.14 |     1.38 |      1.92 |     -20.41 |     1.21 |           545 |
-| BTC + oil, inverse-vol, cap 50% |    30.79 |        22.34 |     1.31 |      1.86 |     -21.61 |     1.42 |           579 |
+| BTC only, capital               |    62.81 |        42.09 |     1.37 |      1.98 |     -30.66 |     2.05 |           529 |
+| BTC only, inverse-vol           |    66.31 |        41.98 |     1.42 |      2.04 |     -30.05 |     2.21 |           507 |
+| BTC + oil, capital              |    53.82 |        38.35 |     1.31 |      1.9  |     -28.08 |     1.92 |           530 |
+| BTC + oil, inverse-vol          |    27.13 |        17.33 |     1.47 |      2.05 |     -15.27 |     1.78 |           461 |
+| BTC + oil, inverse-vol, cap 50% |    34.74 |        22.53 |     1.44 |      2.05 |     -17.95 |     1.94 |           509 |
 
-- BTC + oil, inverse-vol: average capital weights {'BTC OBV Momentum': 0.168, 'BTC AC Momentum': 0.17, 'Oil Trend/Carry BNO': 0.662}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.23, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 153.4, 'BTC AC Momentum': 92.1, 'Oil Trend/Carry BNO': 68.9}
-- BTC + oil, inverse-vol, cap 50%: average capital weights {'BTC OBV Momentum': 0.248, 'BTC AC Momentum': 0.252, 'Oil Trend/Carry BNO': 0.499}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.23, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 255.5, 'BTC AC Momentum': 137.3, 'Oil Trend/Carry BNO': 67.0}
+- BTC + oil, inverse-vol: average capital weights {'BTC OBV Momentum': 0.168, 'BTC AC Momentum': 0.17, 'Oil Trend/Carry BNO': 0.661}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.24, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 161.0, 'BTC AC Momentum': 130.7, 'Oil Trend/Carry BNO': 75.3}
+- BTC + oil, inverse-vol, cap 50%: average capital weights {'BTC OBV Momentum': 0.248, 'BTC AC Momentum': 0.253, 'Oil Trend/Carry BNO': 0.5}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.24, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 284.8, 'BTC AC Momentum': 213.5, 'Oil Trend/Carry BNO': 79.1}
 
 **From 2022-01-01**
 
 |                                 |   CAGR % |   Ann. Vol % |   Sharpe |   Sortino |   Max DD % |   Calmar |   Max DD Days |
 |:--------------------------------|---------:|-------------:|---------:|----------:|-----------:|---------:|--------------:|
-| BTC only, capital               |    32.93 |        36    |     0.97 |      1.41 |     -33.28 |     0.99 |           561 |
-| BTC only, inverse-vol           |    33    |        35.79 |     0.97 |      1.39 |     -31.29 |     1.05 |           532 |
-| BTC + oil, capital              |    25.38 |        28.59 |     0.93 |      1.36 |     -28.68 |     0.88 |           567 |
-| BTC + oil, inverse-vol          |    13.93 |        15.21 |     0.93 |      1.29 |     -20.41 |     0.68 |           545 |
-| BTC + oil, inverse-vol, cap 50% |    19.19 |        19.68 |     0.99 |      1.42 |     -21.62 |     0.89 |           579 |
+| BTC only, capital               |    38.18 |        35.51 |     1.09 |      1.58 |     -26.07 |     1.46 |           513 |
+| BTC only, inverse-vol           |    41.09 |        35.59 |     1.14 |      1.65 |     -26.88 |     1.53 |           506 |
+| BTC + oil, capital              |    29.78 |        28.79 |     1.05 |      1.53 |     -24.22 |     1.23 |           531 |
+| BTC + oil, inverse-vol          |    16.36 |        15.22 |     1.07 |      1.47 |     -17.29 |     0.95 |           461 |
+| BTC + oil, inverse-vol, cap 50% |    22.79 |        19.54 |     1.15 |      1.65 |     -17.95 |     1.27 |           509 |
 
-- BTC + oil, inverse-vol: average capital weights {'BTC OBV Momentum': 0.173, 'BTC AC Momentum': 0.167, 'Oil Trend/Carry BNO': 0.66}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.23, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 46.4, 'BTC AC Momentum': 24.3, 'Oil Trend/Carry BNO': 17.3}
-- BTC + oil, inverse-vol, cap 50%: average capital weights {'BTC OBV Momentum': 0.256, 'BTC AC Momentum': 0.25, 'Oil Trend/Carry BNO': 0.494}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.23, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 77.4, 'BTC AC Momentum': 37.6, 'Oil Trend/Carry BNO': 18.7}
+- BTC + oil, inverse-vol: average capital weights {'BTC OBV Momentum': 0.172, 'BTC AC Momentum': 0.171, 'Oil Trend/Carry BNO': 0.657}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.24, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 49.5, 'BTC AC Momentum': 39.0, 'Oil Trend/Carry BNO': 19.6}
+- BTC + oil, inverse-vol, cap 50%: average capital weights {'BTC OBV Momentum': 0.253, 'BTC AC Momentum': 0.254, 'Oil Trend/Carry BNO': 0.494}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.24, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 85.4, 'BTC AC Momentum': 62.0, 'Oil Trend/Carry BNO': 22.2}
 
 Sleeve return correlation (from 2020-06):
 
 |                     |   BTC OBV Momentum |   BTC AC Momentum |   Oil Trend/Carry BNO |
 |:--------------------|-------------------:|------------------:|----------------------:|
-| BTC OBV Momentum    |               1    |              0.44 |                 -0.05 |
-| BTC AC Momentum     |               0.44 |              1    |                  0    |
-| Oil Trend/Carry BNO |              -0.05 |              0    |                  1    |
+| BTC OBV Momentum    |               1    |              0.48 |                 -0.05 |
+| BTC AC Momentum     |               0.48 |              1    |                 -0.01 |
+| Oil Trend/Carry BNO |              -0.05 |             -0.01 |                  1    |
 
-## Verdict (2026-10-30)
 
-**Stabilising: it fixed the problem it was meant to fix, at a cost.**
-- Trades fell from ~12/yr to ~1.5/yr and cost sensitivity basically disappeared: USO out-of-sample Sharpe at 3× costs went from 0.05 to 0.31, and USO max DD halved (−35% → −18%).
-- The declared selection (confirm 10 days, smooth 5) won in-sample by a hair (0.49 vs 0.48 for confirm 5). Out of sample, 10 days is too slow for BNO: Sharpe 0.54 → 0.22. Confirm 3–5 did better out of sample on both ETFs (0.5–1.1), but switching to it now would be choosing on test data. Settle this with a walk-forward selection (re-pick each year using only past data) rather than by eye.
+## Correction (2026-10-30, later the same day)
 
-**Risk-based weighting: mostly a risk dial, not a Sharpe boost.**
-- An earlier version of this run showed Sharpe 1.50. That depended on a flaw: a 0-vol reading from the oil sleeve sitting flat reset all sleeves to equal weights. With the fix (252-day vol, fall back to the sleeve's own history, 5% floor) the result is:
-- From 2020-06: inverse-vol book Sharpe 1.38 vs 1.28 BTC-only, vol 17% vs 42%, max DD −20% vs −34%, but CAGR 25% vs 57%.
-- From 2022 (the oil sleeve's out-of-sample period): Sharpe flat (0.93–0.99 everywhere). Max DD drops from −33% to −20/−22%; CAGR drops from 33% to 14–19%.
-- Inverse-vol gives oil ~66% of capital, because it's often flat and its realised vol looks low. The 50% cap is the more sensible version.
-- A diversifier only lifts book Sharpe if its own Sharpe is decent. At ~0.2–0.5 the oil sleeve mainly lowers risk.
+The book numbers in this file were regenerated after fixing a stop-loss bug in the engine (see
+`engine/stopsim.py` and the README "Correction" section). The fix only affects the BTC AC sleeve
+(the only strategy with a stop). The verdict text above was written before the fix; the tables
+above are current. Updated reading: risk weighting still cuts book vol and drawdown, but with the
+corrected (stronger) AC sleeve, adding oil now *lowers* book Sharpe rather than leaving it flat.

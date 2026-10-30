@@ -1,45 +1,70 @@
 # Baseline re-run of the original strategies
 
-Generated 2026-10-19 11:41. Capital $100k per sleeve. Out-of-sample window starts 2025-11-05.
+Generated 2026-10-30 12:54. Capital $100k per sleeve. Out-of-sample window starts 2025-11-05.
 
 ## BTC AC Momentum  (from 2019-01-07)
 
-|                               |   Total Return % |   CAGR % |   Sharpe |   Max DD % |   Calmar |   Trades |   Win Rate % |   Exposure % |   Costs Paid |   Benchmark Return % |   Benchmark Sharpe |
-|:------------------------------|-----------------:|---------:|---------:|-----------:|---------:|---------:|-------------:|-------------:|-------------:|---------------------:|-------------------:|
-| A Legacy                      |          4633    |    64.17 |     1.19 |     -40.4  |     1.59 |      181 |        33.15 |        96.31 |            0 |              1943    |               0.95 |
-| B +Next-bar open              |          1697    |    44.96 |     0.95 |     -56.29 |     0.8  |      192 |        35.42 |        95.92 |            0 |              1943    |               0.95 |
-| C +Intrabar stops             |          2389    |    51.15 |     1.05 |     -53.5  |     0.96 |      272 |        29.78 |        92.72 |            0 |              1943    |               0.95 |
-| D +Costs (FIXED)              |          1503    |    42.85 |     0.94 |     -55.25 |     0.78 |      272 |        28.68 |        92.72 |       546556 |              1943    |               0.95 |
-| E Fixed, OOS since 2025-11-05 |            16.19 |    17.06 |     0.61 |     -24.09 |     0.71 |       30 |        36.67 |        94.27 |         6820 |               -20.84 |              -0.33 |
+|                               |   Total Return % |   CAGR % |   Sharpe |   Max DD % |   Calmar |   Trades |   Win Rate % |   Exposure % |     Costs Paid |   Benchmark Return % |   Benchmark Sharpe |
+|:------------------------------|-----------------:|---------:|---------:|-----------:|---------:|---------:|-------------:|-------------:|---------------:|---------------------:|-------------------:|
+| A Legacy                      |          4762    |    64.42 |     1.2  |     -40.4  |     1.59 |      182 |        32.97 |        96.29 |    0           |              1819    |               0.93 |
+| B +Next-bar open              |          3577    |    58.64 |     1.12 |     -47.02 |     1.25 |      203 |        33    |        95.8  |    0           |              1819    |               0.93 |
+| C +Intrabar stops             |         10111    |    80.8  |     1.41 |     -37.81 |     2.14 |      287 |        22.3  |        92.54 |    0           |              1819    |               0.93 |
+| D +Costs (FIXED)              |          5654    |    68    |     1.26 |     -41.32 |     1.65 |      287 |        22.3  |        92.54 |    1.43738e+06 |              1819    |               0.93 |
+| E Fixed, OOS since 2025-11-05 |            36.21 |    36.94 |     1.07 |     -20.62 |     1.79 |       32 |        21.88 |        93.89 | 7468           |               -25.65 |              -0.46 |
 
 ## BTC OBV Momentum  (from 2020-06-01)
 
 |                               |   Total Return % |   CAGR % |   Sharpe |   Max DD % |   Calmar |   Trades |   Win Rate % |   Exposure % |   Costs Paid |   Benchmark Return % |   Benchmark Sharpe |
 |:------------------------------|-----------------:|---------:|---------:|-----------:|---------:|---------:|-------------:|-------------:|-------------:|---------------------:|-------------------:|
-| A Legacy                      |          3608    |    76.14 |     1.38 |     -37.47 |     2.03 |       60 |        43.33 |       100    |            0 |               708.87 |               0.86 |
-| B +Next-bar open              |          3597    |    76.06 |     1.38 |     -37.49 |     2.03 |       60 |        43.33 |        99.96 |            0 |               708.87 |               0.86 |
-| C +Intrabar stops             |          3597    |    76.06 |     1.38 |     -37.49 |     2.03 |       60 |        43.33 |        99.96 |            0 |               708.87 |               0.86 |
-| D +Costs (FIXED)              |          3178    |    72.78 |     1.34 |     -37.91 |     1.92 |       60 |        43.33 |        99.96 |       125863 |               708.87 |               0.86 |
-| E Fixed, OOS since 2025-11-05 |            71.91 |    76.59 |     1.87 |     -15.47 |     4.95 |        5 |        40    |       100    |         1254 |               -20.84 |              -0.33 |
+| A Legacy                      |          3383    |    73.97 |     1.36 |     -37.47 |     1.97 |       60 |        43.33 |       100    |            0 |               659.76 |               0.84 |
+| B +Next-bar open              |          3372    |    73.89 |     1.36 |     -37.49 |     1.97 |       60 |        43.33 |        99.96 |            0 |               659.76 |               0.84 |
+| C +Intrabar stops             |          3372    |    73.89 |     1.36 |     -37.49 |     1.97 |       60 |        43.33 |        99.96 |            0 |               659.76 |               0.84 |
+| D +Costs (FIXED)              |          2979    |    70.66 |     1.32 |     -37.91 |     1.86 |       60 |        43.33 |        99.96 |       125863 |               659.76 |               0.84 |
+| E Fixed, OOS since 2025-11-05 |            61.47 |    62.82 |     1.63 |     -15.47 |     4.06 |        5 |        40    |       100    |         1254 |               -25.65 |              -0.46 |
 
 ## Oil Corr Reversion  (from 2016-01-01)
 
 |                               |   Total Return % |   CAGR % | Sharpe   |   Max DD % | Calmar   |   Trades | Win Rate %   |   Exposure % |   Costs Paid |   Benchmark Return % |   Benchmark Sharpe |
 |:------------------------------|-----------------:|---------:|:---------|-----------:|:---------|---------:|:-------------|-------------:|-------------:|---------------------:|-------------------:|
-| A Legacy                      |                0 |        0 | –        |          0 | –        |        0 | –            |            0 |            0 |               179.74 |               0.44 |
-| B +Next-bar open              |                0 |        0 | –        |          0 | –        |        0 | –            |            0 |            0 |               179.74 |               0.44 |
-| C +Intrabar stops             |                0 |        0 | –        |          0 | –        |        0 | –            |            0 |            0 |               179.74 |               0.44 |
-| D +Costs (FIXED)              |                0 |        0 | –        |          0 | –        |        0 | –            |            0 |            0 |               179.74 |               0.44 |
-| E Fixed, OOS since 2025-11-05 |                0 |        0 | –        |          0 | –        |        0 | –            |            0 |            0 |                68.04 |               1.28 |
+| A Legacy                      |                0 |        0 | –        |          0 | –        |        0 | –            |            0 |            0 |               193.22 |               0.45 |
+| B +Next-bar open              |                0 |        0 | –        |          0 | –        |        0 | –            |            0 |            0 |               193.22 |               0.45 |
+| C +Intrabar stops             |                0 |        0 | –        |          0 | –        |        0 | –            |            0 |            0 |               193.22 |               0.45 |
+| D +Costs (FIXED)              |                0 |        0 | –        |          0 | –        |        0 | –            |            0 |            0 |               193.22 |               0.45 |
+| E Fixed, OOS since 2025-11-05 |                0 |        0 | –        |          0 | –        |        0 | –            |            0 |            0 |                76.17 |               1.34 |
 
 ## Combined book (full, from 2020-06-01, equal weight, $300k)
 
 |                    |   Total Return % |   CAGR % | Sharpe   |   Max DD % | Calmar   |   Trades | Win Rate %   | Exposure %   |   Costs Paid |   Benchmark Return % |   Benchmark Sharpe |
 |:-------------------|-----------------:|---------:|:---------|-----------:|:---------|---------:|:-------------|:-------------|-------------:|---------------------:|-------------------:|
-| BTC AC Momentum    |            495.3 |    32.25 | 0.82     |     -50.03 | 0.64     |      235 | 27.23        | 92.24        |       216126 |               708.87 |               0.86 |
-| BTC OBV Momentum   |           3178   |    72.78 | 1.34     |     -37.91 | 1.92     |       60 | 43.33        | 99.96        |       125863 |               708.87 |               0.86 |
-| Oil Corr Reversion |              0   |     0    | –        |       0    | –        |        0 | –            | 0.00         |            0 |               180.54 |               0.61 |
-| BOOK               |           1207   |    49.6  | 1.24     |     -31.25 | 1.59     |      295 | 30.51        | –            |       341988 |               532.76 |               0.86 |
+| BTC AC Momentum    |             1429 |    53.01 | 1.13     |     -41.32 | 1.28     |      241 | 21.58        | 92.36        |       410524 |               659.76 |               0.84 |
+| BTC OBV Momentum   |             2979 |    70.66 | 1.32     |     -37.91 | 1.86     |       60 | 43.33        | 99.96        |       125863 |               659.76 |               0.84 |
+| Oil Corr Reversion |                0 |     0    | –        |       0    | –        |        0 | –            | 0.00         |            0 |               194.12 |               0.63 |
+| BOOK               |             1469 |    53.62 | 1.31     |     -28.19 | 1.90     |      301 | 25.91        | –            |       536387 |               504.55 |               0.84 |
+
+Sleeve return correlation:
+
+|                    |   BTC AC Momentum |   BTC OBV Momentum |   Oil Corr Reversion |
+|:-------------------|------------------:|-------------------:|---------------------:|
+| BTC AC Momentum    |              1    |               0.48 |                  nan |
+| BTC OBV Momentum   |              0.48 |               1    |                  nan |
+| Oil Corr Reversion |            nan    |             nan    |                  nan |
+
+P&L contribution (% of book):
+
+|                    |      % |
+|:-------------------|-------:|
+| BTC AC Momentum    | 511.38 |
+| BTC OBV Momentum   | 993.12 |
+| Oil Corr Reversion |   0    |
+
+## Combined book (OOS, from 2025-11-05, equal weight, $300k)
+
+|                    |   Total Return % |   CAGR % | Sharpe   |   Max DD % | Calmar   |   Trades | Win Rate %   | Exposure %   |   Costs Paid |   Benchmark Return % |   Benchmark Sharpe |
+|:-------------------|-----------------:|---------:|:---------|-----------:|:---------|---------:|:-------------|:-------------|-------------:|---------------------:|-------------------:|
+| BTC AC Momentum    |            36.21 |    36.94 | 1.07     |     -20.62 | 1.79     |       32 | 21.88        | 93.89        |         7468 |               -25.65 |              -0.46 |
+| BTC OBV Momentum   |            61.47 |    62.82 | 1.63     |     -15.47 | 4.06     |        5 | 40.00        | 100.00       |         1254 |               -25.65 |              -0.46 |
+| Oil Corr Reversion |             0    |     0    | –        |       0    | –        |        0 | –            | 0.00         |            0 |                76.17 |               1.34 |
+| BOOK               |            32.3  |    32.95 | 1.48     |      -7.86 | 4.19     |       37 | 24.32        | –            |         8721 |                 8.29 |               0.41 |
 
 Sleeve return correlation:
 
@@ -51,44 +76,19 @@ Sleeve return correlation:
 
 P&L contribution (% of book):
 
-|                    |       % |
-|:-------------------|--------:|
-| BTC AC Momentum    |  177.2  |
-| BTC OBV Momentum   | 1059.46 |
-| Oil Corr Reversion |    0    |
-
-## Combined book (OOS, from 2025-11-05, equal weight, $300k)
-
-|                    |   Total Return % |   CAGR % | Sharpe   |   Max DD % | Calmar   |   Trades | Win Rate %   | Exposure %   |   Costs Paid |   Benchmark Return % |   Benchmark Sharpe |
-|:-------------------|-----------------:|---------:|:---------|-----------:|:---------|---------:|:-------------|:-------------|-------------:|---------------------:|-------------------:|
-| BTC AC Momentum    |            16.19 |    17.06 | 0.61     |     -24.09 | 0.71     |       30 | 36.67        | 94.27        |         6820 |               -20.84 |              -0.33 |
-| BTC OBV Momentum   |            71.91 |    76.59 | 1.87     |     -15.47 | 4.95     |        5 | 40.00        | 100.00       |         1254 |               -20.84 |              -0.33 |
-| Oil Corr Reversion |             0    |     0    | –        |       0    | –        |        0 | –            | 0.00         |            0 |                68.04 |               1.28 |
-| BOOK               |            29.13 |    30.78 | 1.38     |      -8.4  | 3.66     |       35 | 37.14        | –            |         8074 |                 8.79 |               0.43 |
-
-Sleeve return correlation:
-
-|                    |   BTC AC Momentum |   BTC OBV Momentum |   Oil Corr Reversion |
-|:-------------------|------------------:|-------------------:|---------------------:|
-| BTC AC Momentum    |              1    |               0.47 |                  nan |
-| BTC OBV Momentum   |              0.47 |               1    |                  nan |
-| Oil Corr Reversion |            nan    |             nan    |                  nan |
-
-P&L contribution (% of book):
-
-|                    |     % |
-|:-------------------|------:|
-| BTC AC Momentum    |  5.27 |
-| BTC OBV Momentum   | 23.4  |
-| Oil Corr Reversion |  0    |
+|                    |    % |
+|:-------------------|-----:|
+| BTC AC Momentum    | 11.8 |
+| BTC OBV Momentum   | 20   |
+| Oil Corr Reversion |  0   |
 
 ## Original code, run unchanged on today's data
 
 |                                |   Total Return % | Sharpe   | Max DD %   | Win Rate %   | Trades   |
 |:-------------------------------|-----------------:|:---------|:-----------|:-------------|:---------|
-| BTC AC Momentum                |          5616    | 1.25     | -40.40     | 34.09        | 177.00   |
-| BTC OBV Momentum               |          3246    | 1.38     | -37.66     | 43.10        | 59.00    |
-| Oil Corr Reversion             |           166.71 | 0.72     | -18.01     | 100.00       | 1.00     |
-| OLD BOOK (as reported)         |          2349    | 0.87     | -28.47     | 69.30        | 59.50    |
+| BTC AC Momentum                |          5772    | 1.25     | -40.40     | 33.90        | 178.00   |
+| BTC OBV Momentum               |          3041    | 1.36     | -37.66     | 43.10        | 59.00    |
+| Oil Corr Reversion             |           166.71 | 0.71     | -18.01     | 100.00       | 1.00     |
+| OLD BOOK (as reported)         |          2334    | 0.86     | -28.47     | 69.25        | 59.75    |
 | OLD BOOK (plot start value)    |           300    | –        | –          | –            | –        |
-| OLD BOOK (true sum of columns) |          2349    | –        | -29.50     | –            | –        |
+| OLD BOOK (true sum of columns) |          2334    | –        | -29.50     | –            | –        |

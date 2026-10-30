@@ -60,6 +60,17 @@ rebalance="ME", max_weight=None, vol_floor=0.05, transfer_cost=0.001)`. In `inve
 `Sleeve.weight` is a risk budget and capital is re-split month-end by 1/trailing vol.
 `LEGACY` reproduces the old assumptions so you can compare.
 
+## Correction: stop-losses with next-open fills (2026-10-30)
+
+The first version of this engine under-stated the BTC AC strategy (reported +1,503%, Sharpe 0.94;
+corrected: +5,654%, Sharpe 1.26 from 2019). With next-open execution, vectorbt (1) measured the stop
+from the entry bar's *close* instead of the fill price, and (2) evaluated the stop *before* the
+open signal on the same bar, booking a full stop-loss and re-entering a day late on days the
+signal flipped. Strategies with stops and `execution="next_open"` now run through
+`engine/stopsim.py` (signals at the open → intraday stop from the fill price → mark at close).
+It matches vectorbt exactly when there are no stops (tested). Strategies without stops were
+never affected.
+
 ## What was fixed (vs `Portfolio/`)
 
 | # | Old behaviour | Fix |
