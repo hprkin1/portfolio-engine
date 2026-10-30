@@ -34,7 +34,7 @@ def synthetic_panel(symbols=("AAA-USD",), n=600, seed=0):
 
 def make(name):
     cls = REGISTRY[name]
-    syms = ["AAA-USD", "BBB-USD"] if name in ("CorrReversion", "OilSpreadReversion") else ["AAA-USD"]
+    syms = ["AAA-USD", "BBB-USD"] if name in ("CorrReversion", "OilSpreadReversion", "PairsReversion") else ["AAA-USD"]
     kw = {"entry_corr_low": 0.95} if name == "CorrReversion" else {}  # make it trade on synthetic data
     if name == "OilTrendCarry":
         s = cls(symbols=["AAA-USD"], signal_symbols=["BBB-USD"], trend_lb=60, carry_lb=20, vol_target=0.2,
@@ -263,3 +263,33 @@ def test_obv_variants_no_lookahead(kw):
     for attr in ("entries", "exits", "short_entries", "short_exits", "target"):
         if getattr(full, attr) is not None:
             pd.testing.assert_frame_equal(getattr(part, attr), getattr(full, attr).iloc[:400], check_freq=False)
+
+
+
+@pytest.mark.parametrize("version", ["A", "B", "C"])
+def test_pairs_versions(version):
+    panel = synthetic_panel(("AAA-USD", "BBB-USD"), n=900, seed=3)
+    s = REGISTRY["PairsReversion"](symbols=["AAA-USD", "BBB-USD"], version=version, corr_hist=120)
+    ind, sig = s.run(panel)
+    w = sig.target
+    if version == "C":
+        assert (w >= 0).all().all() and (w.sum(axis=1) <= 1).all()        # long-only, one leg at a time
+    else:
+        assert np.allclose(w.sum(axis=1), 0)                                # dollar-neutral every bar
+        assert set(np.unique(w.values)) <= {-0.5, 0.0, 0.5}
+    # no look-ahead
+    _, part = s.run({k: v.iloc[:600] for k, v in panel.items()})
+    pd.testing.assert_frame_equal(part.target, w.iloc[:600], check_freq=False)
+    r = backtest_strategy(s, 10_000, "2020-06-01", panel=panel)
+    assert np.isfinite(r.equity).all()
+
+
+def test_pairs_entry_logic():
+    from strategies.pairs_reversion import pair_positions_ab
+    gz = np.array([0, 2.1, 1.5, 0.5, -0.1, -2.2, -4.1, -3.0, -1.0, -2.5])
+    cz = np.full(len(gz), -2.0)
+    pos = pair_positions_ab(gz, cz, True, 2.0, 0.0, 4.0, 30, -1.0)
+    # short spread at 2.1, exit when gap <= 0 (-0.1); long at -2.2; stopped at -4.1; blocked until |z|<2 (-1.0); re-enter -2.5
+    assert list(pos) == [0, -1, -1, -1, 0, 1, 0, 0, 0, 1]
+    pos_b = pair_positions_ab(gz, np.full(len(gz), 0.0), True, 2.0, 0.0, 4.0, 30, -1.0)
+    assert (pos_b == 0).all()                                                # B needs the correlation trigger

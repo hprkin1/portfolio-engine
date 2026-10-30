@@ -21,9 +21,18 @@ CACHE_DIR = Path(os.environ.get("ENGINE_CACHE", Path(__file__).resolve().parents
 MAX_CACHE_AGE_HOURS = 12
 
 
+def total_return_prices(symbol: str) -> bool:
+    """Stocks and ETFs pay dividends: use dividend+split-adjusted OHLC so a long/short pair
+    counts the dividend the long receives and the short pays. Crypto and futures don't pay
+    dividends and keep raw prices (unchanged behaviour)."""
+    from .costs import infer_asset_class
+    return infer_asset_class(symbol) == "equity"
+
+
 def _cache_path(symbol: str, interval: str) -> Path:
     safe = symbol.replace("/", "_").replace("=", "_").replace("^", "_")
-    return CACHE_DIR / f"{safe}_{interval}.parquet"
+    suffix = "_adj" if total_return_prices(symbol) else ""
+    return CACHE_DIR / f"{safe}_{interval}{suffix}.parquet"
 
 
 def _download(symbol: str, start: str, interval: str, retries: int = 3) -> pd.DataFrame:
@@ -32,7 +41,7 @@ def _download(symbol: str, start: str, interval: str, retries: int = 3) -> pd.Da
     last_err = None
     for attempt in range(retries):
         try:
-            df = yf.download(symbol, start=start, interval=interval, auto_adjust=False,
+            df = yf.download(symbol, start=start, interval=interval, auto_adjust=total_return_prices(symbol),
                              progress=False, multi_level_index=False)
             if df.empty:
                 raise ValueError(f"yfinance returned no data for {symbol}")
