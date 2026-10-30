@@ -185,7 +185,8 @@ def backtest_strategy(strategy: BaseStrategy, capital: float = 100_000, start: s
 class Sleeve:
     strategy: BaseStrategy
     weight: float = 1.0
-    start: str | None = None  # per-sleeve override
+    start: str | None = None            # per-sleeve override
+    config: ExecConfig | None = None    # per-sleeve execution/costs override (default: the manager's)
 
 
 @dataclass
@@ -264,7 +265,7 @@ class PortfolioManager:
         for s in self.sleeves:
             name = s.strategy.name
             cap = self.capital * (self.weights[name] if self.weighting == "capital" else 1.0)
-            results[name] = backtest_strategy(s.strategy, cap, s.start or self.start, self.end, self.config)
+            results[name] = backtest_strategy(s.strategy, cap, s.start or self.start, self.end, s.config or self.config)
         idx = pd.DatetimeIndex(sorted(set().union(*(r.equity.index for r in results.values()))))
         all_pos = pd.concat([r.positions for r in results.values()], ignore_index=True)
         costs = sum(r.metrics.get("Costs Paid", 0) for r in results.values())

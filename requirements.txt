@@ -6,3 +6,5 @@ pyarrow
 matplotlib
 tabulate
 pytest
+streamlit>=1.40
+plotly>=5.0

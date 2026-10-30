@@ -4,3 +4,5 @@ data_cache/
 .ipynb_checkpoints/
 .venv/
 .env
+paper/*.log
+paper/archive_*/

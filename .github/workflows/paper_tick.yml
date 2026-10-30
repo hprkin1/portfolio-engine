@@ -1,0 +1,43 @@
+name: Paper trading tick
+
+# Daily paper-trading update (cron). 00:30 UTC = after the crypto daily close and the previous US session.
+# Also runnable by hand (Actions tab -> Run workflow) or by an external cron service via repository_dispatch
+# (type: paper_tick), like tradingsignalbot uses cron-job.org.
+on:
+  schedule:
+    - cron: "30 0 * * *"
+  workflow_dispatch:
+  repository_dispatch:
+    types: [paper_tick]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: paper-tick
+  cancel-in-progress: false
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Paper tick
+        run: python -m paper.tick
+      - name: Commit ledger
+        run: |
+          git config user.name "paper-tick-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add paper/state
+          if git diff --cached --quiet; then echo "no changes"; else
+            git commit -m "paper: daily tick $(date -u +%F)"
+            git pull --rebase origin main
+            git push
+          fi

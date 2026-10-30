@@ -16,7 +16,9 @@ engine/
 strategies/      ac_momentum.py, obv_momentum.py (BTC), oil_trend_carry.py (oil sleeve)
 scripts/run_baseline.py   re-baseline: shows the effect of each fix, plus out-of-sample
 scripts/research_*.py     OBV improvement, oil trend-carry and stabilisation research (reports/obv, reports/oil)
-tests/           offline tests: no look-ahead, next-bar fills, costs, book accounting
+tests/           offline tests: no look-ahead, next-bar fills, costs, book accounting, paper ledger
+dashboard/       Streamlit app (app.py) + testable logic (core.py)
+paper/           forward paper trading: config, ledger, daily tick, state/ (ledger files)
 reports/         baseline.md, CSVs, equity chart
 ```
 
@@ -58,6 +60,18 @@ Book weighting: `PortfolioManager(..., weighting="capital"|"inverse_vol", vol_lo
 rebalance="ME", max_weight=None, vol_floor=0.05, transfer_cost=0.001)`. In `inverse_vol`,
 `Sleeve.weight` is a risk budget and capital is re-split month-end by 1/trailing vol.
 `LEGACY` reproduces the old assumptions so you can compare.
+
+## Dashboard and paper trading
+
+```bash
+pip install -r requirements.txt
+python -m streamlit run dashboard/app.py
+```
+
+Four tabs: **Overview** (today's orders, the paper-traded book's history), **Backtest** (pick strategies,
+settings, weighting, costs, dates: equity, drawdown, monthly returns, trades), **Robustness** (setting sweeps,
+cost stress, Sharpe by year) and **Paper trading** (live paper ledger vs what the backtest expected).
+Paper trading updates daily by cron: see [paper/README.md](paper/README.md).
 
 ## Strategy status (2026-10-30)
 
