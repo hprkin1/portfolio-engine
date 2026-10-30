@@ -67,7 +67,8 @@ rebalance="ME", max_weight=None, vol_floor=0.05, transfer_cost=0.001)`. In `inve
 | `OBVMomentum` (BTC) | Live candidate · 2% stop added (reports/obv) |
 | `ACMomentum` (BTC) | Live candidate · 2% stop |
 | `OilTrendCarry` (USO/BNO) | Live candidate · modest, crash-protection role (reports/oil) |
-| `PairsReversion` (equity pairs) | Research · failed v1 tests (reports/pairs), being reworked |
+| `PairsReversion` (equity pairs v1) | Research · failed (reports/pairs) |
+| `PairsPortfolio` (systematic pairs v2) | Research · failed after costs (reports/pairs_v2) |
 | `CorrReversion` (WTI/Brent) | **Retired** · never trades on clean data |
 | `OilSpreadReversion` (Brent–WTI z-score) | Retired · research only |
 
