@@ -1,4 +1,9 @@
-"""Correlation mean-reversion on a pair (port of Portfolio/CorrArb_Class.py).
+"""RETIRED (2026-10-30) - kept for reference only; do not use as a live sleeve.
+Reason: on clean data WTI/Brent correlation never drops below ~0.65, so it never trades; its only
+historical profit came from the April-2020 negative-price print. The idea was generalised and
+tested in strategies/pairs_reversion.py (reports/pairs/).
+
+Correlation mean-reversion on a pair (port of Portfolio/CorrArb_Class.py).
 
 Logic is unchanged from the original:
     when rolling return-correlation < entry_corr_low, go LONG whichever leg

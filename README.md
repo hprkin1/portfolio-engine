@@ -13,8 +13,8 @@ engine/
   strategy.py    BaseStrategy contract + Signals; strategies are pure signal logic
   portfolio.py   backtest_strategy() for one sleeve, PortfolioManager for a weighted book
   metrics.py     metrics from the equity curve (correct annualisation, no column averaging)
-strategies/      ac_momentum.py, obv_momentum.py, corr_reversion.py  (faithful ports)
-                 oil_spread.py (research only), oil_trend_carry.py (oil sleeve)
+strategies/      ac_momentum.py, obv_momentum.py (BTC), oil_trend_carry.py (oil sleeve),
+                 pairs_reversion.py (research), corr_reversion.py + oil_spread.py (retired)
 scripts/run_baseline.py   re-baseline: shows the effect of each fix, plus out-of-sample
 scripts/research_oil*.py  oil spread / trend-carry / stabilisation research (reports/oil/)
 tests/           offline tests: no look-ahead, next-bar fills, costs, book accounting
@@ -59,6 +59,17 @@ Book weighting: `PortfolioManager(..., weighting="capital"|"inverse_vol", vol_lo
 rebalance="ME", max_weight=None, vol_floor=0.05, transfer_cost=0.001)`. In `inverse_vol`,
 `Sleeve.weight` is a risk budget and capital is re-split month-end by 1/trailing vol.
 `LEGACY` reproduces the old assumptions so you can compare.
+
+## Strategy status (2026-10-30)
+
+| Strategy | Status |
+|---|---|
+| `OBVMomentum` (BTC) | Live candidate · 2% stop added (reports/obv) |
+| `ACMomentum` (BTC) | Live candidate · 2% stop |
+| `OilTrendCarry` (USO/BNO) | Live candidate · modest, crash-protection role (reports/oil) |
+| `PairsReversion` (equity pairs) | Research · failed v1 tests (reports/pairs), being reworked |
+| `CorrReversion` (WTI/Brent) | **Retired** · never trades on clean data |
+| `OilSpreadReversion` (Brent–WTI z-score) | Retired · research only |
 
 ## Correction: stop-losses with next-open fills (2026-10-30)
 
