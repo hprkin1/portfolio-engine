@@ -16,6 +16,6 @@ Headline basket = EWA/EWC, XOM/CVX, KO/PEP, V/MA, HD/LOW, GLD/SLV, equal capital
 **Why C is rejected anyway:** on the exact same days C is invested, buying the *leader* instead gives Sharpe 0.58 / 0.86, buying *both* gives 0.64 / 1.02, and holding both all the time gives 0.62 / 0.97 (with 4–5× the return). The catch-up itself (laggard minus leader) earns 0.16% / 0.44% a year (Sharpe 0.11 / 0.39). C's Sharpe is long-equity exposure, not the idea.
 
 - The correlation trigger cuts time in market from ~42% to ~12% and doesn't improve the hedged version in DEV or VAL. B's good holdout (0.61) is not supported by the earlier periods.
-- No pair is consistently positive across periods under A or B.
+- Under A only EWA/EWC (0.18 / 0.07) and HD/LOW (0.12 / 0.71) were positive in both DEV and VAL, both weakly; HD/LOW then lost in the holdout (−0.24).
 - Stability (A, DEV): Sharpe 0.01–0.48 across lookback 40/60/90 × entry 1.5/2/2.5; fragile.
 - Controls as expected: QQQ/SPY hedged is negative in every period (A: −0.42 / −0.20 / −0.55): the gap trends. SPY/EWU A: 0.10 / −0.31 / −1.02.
