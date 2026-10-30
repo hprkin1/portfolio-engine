@@ -16,6 +16,11 @@ Two of the best-documented commodity return drivers, applied to oil ETFs:
   seaborne-supply stress regime. Longs are only allowed in that regime and
   shorts only outside it.
 
+Stabilisers (added 2026-10-30, see reports/oil/stabilise.md):
+    spread_smooth  average the (noisy, front-month) spread over N days first
+    confirm_days   each of trend sign / carry sign / spread regime only switches
+                   once the new value has held N consecutive days (debounce)
+
 Rules → target weight w in [-max_lev, +max_lev] of sleeve equity:
     rule="trend":  w = sign(trend)
     rule="carry":  w = sign(carry)
@@ -36,6 +41,34 @@ from engine.strategy import BaseStrategy, Panel, Signals
 FRONT = {"USO": "CL=F", "BNO": "BZ=F"}
 
 
+def debounce(x: pd.Series, n: int) -> pd.Series:
+    """Causal debounce: the output switches to a new value only after the input has
+    shown that value for n consecutive bars. n<=1 returns x unchanged. NaN passes through."""
+    if n <= 1:
+        return x
+    v = x.to_numpy(dtype=float)
+    out = np.full(len(v), np.nan)
+    state, cand, cnt = np.nan, np.nan, 0
+    for i, xi in enumerate(v):
+        if np.isnan(xi):
+            out[i] = state
+            continue
+        if np.isnan(state):
+            state = xi
+        elif xi == state:
+            cnt = 0
+        elif xi == cand:
+            cnt += 1
+            if cnt >= n:
+                state, cnt = xi, 0
+        else:
+            cand, cnt = xi, 1
+            if n == 1:
+                state = xi
+        out[i] = state
+    return pd.Series(out, index=x.index)
+
+
 class OilTrendCarry(BaseStrategy):
     DEFAULT_SYMBOLS = ["USO"]
     DEFAULT_SIGNAL_SYMBOLS = ["CL=F", "BZ=F"]
@@ -49,6 +82,8 @@ class OilTrendCarry(BaseStrategy):
         "max_lev": 1.0,
         "spread_filter": False,
         "spread_lb": 252,
+        "spread_smooth": 1,      # days to average the Brent-WTI spread before comparing to its median
+        "confirm_days": 1,       # a trend/carry/spread state only switches after holding this many days
     }
     WARMUP_BARS = 400
 
@@ -71,14 +106,15 @@ class OilTrendCarry(BaseStrategy):
         vol = lc[etf].diff().rolling(p["vol_lb"]).std() * np.sqrt(252)
         out = {"trend": trend, "carry": carry, "vol": vol}
         if "BZ=F" in c and "CL=F" in c:
-            spread = c["BZ=F"] - c["CL=F"]
+            spread = (c["BZ=F"] - c["CL=F"]).rolling(p["spread_smooth"]).mean()
             out["bw_spread"] = spread
             out["bw_spread_med"] = spread.rolling(p["spread_lb"]).median()
         return pd.DataFrame(out, index=c.index)
 
     def signals(self, panel: Panel, ind: pd.DataFrame) -> Signals:
         p = self.params
-        t, k = np.sign(ind["trend"]), np.sign(ind["carry"])
+        n = p["confirm_days"]
+        t, k = debounce(np.sign(ind["trend"]), n), debounce(np.sign(ind["carry"]), n)
         if p["rule"] == "hold":
             w = pd.Series(1.0, index=ind.index)
         elif p["rule"] == "trend":
@@ -89,7 +125,8 @@ class OilTrendCarry(BaseStrategy):
             w = pd.Series(np.where((t > 0) & (k > 0), 1.0, np.where((t < 0) & (k < 0), -1.0, 0.0)), index=ind.index)
             w[t.isna() | k.isna()] = np.nan
         if p["spread_filter"] and "bw_spread" in ind:
-            stress = ind["bw_spread"] > ind["bw_spread_med"]
+            raw = (ind["bw_spread"] > ind["bw_spread_med"]).astype(float).where(ind["bw_spread_med"].notna())
+            stress = debounce(raw, n) == 1
             w = w.where(~((w > 0) & ~stress), 0.0).where(~((w < 0) & stress), 0.0)
         if p["long_only"]:
             w = w.clip(lower=0)

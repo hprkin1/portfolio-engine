@@ -37,7 +37,8 @@ def make(name):
     syms = ["AAA-USD", "BBB-USD"] if name in ("CorrReversion", "OilSpreadReversion") else ["AAA-USD"]
     kw = {"entry_corr_low": 0.95} if name == "CorrReversion" else {}  # make it trade on synthetic data
     if name == "OilTrendCarry":
-        s = cls(symbols=["AAA-USD"], signal_symbols=["BBB-USD"], trend_lb=60, carry_lb=20, vol_target=0.2)
+        s = cls(symbols=["AAA-USD"], signal_symbols=["BBB-USD"], trend_lb=60, carry_lb=20, vol_target=0.2,
+                confirm_days=5)
         return s, ["AAA-USD", "BBB-USD"]
     return cls(symbols=syms, **kw), syms
 
@@ -150,3 +151,32 @@ def test_signal_symbols_not_traded():
     s = REGISTRY["OilTrendCarry"](symbols=["AAA-USD"], signal_symbols=["BBB-USD"], trend_lb=60, carry_lb=20)
     r = backtest_strategy(s, 10_000, "2020-01-01", panel=panel)
     assert list(r.portfolio.wrapper.columns) == ["AAA-USD"]
+
+
+def test_debounce():
+    from strategies.oil_trend_carry import debounce
+    x = pd.Series([1, 1, -1, 1, -1, -1, -1, 1, 1, 1], dtype=float)
+    assert list(debounce(x, 3)) == [1, 1, 1, 1, 1, 1, -1, -1, -1, 1]
+    assert list(debounce(x, 1)) == list(x)
+
+
+def test_inverse_vol_book(monkeypatch):
+    panels = {"AAA-USD": synthetic_panel(("AAA-USD",), seed=1), "BBB-USD": synthetic_panel(("BBB-USD",), seed=2)}
+    # make BBB 4x less volatile
+    for f in ("Open", "High", "Low", "Close"):
+        x = panels["BBB-USD"][f]
+        panels["BBB-USD"][f] = 100 * (x / 100) ** 0.25
+    monkeypatch.setattr("engine.portfolio.load_panel", lambda syms, *a, **k: panels[syms[0]])
+    s1 = REGISTRY["OBVMomentum"](name="hi", symbols=["AAA-USD"], mom_period=20)
+    s2 = REGISTRY["OBVMomentum"](name="lo", symbols=["BBB-USD"], mom_period=20)
+    pm = PortfolioManager([s1, s2], capital=100_000, start="2020-01-01", weighting="inverse_vol", transfer_cost=0.0,
+                          vol_lookback=60)
+    book = pm.run()
+    w = book.weight_history.iloc[-1]
+    assert w["lo"] > 0.7 and w["hi"] < 0.3                       # low-vol sleeve gets more capital
+    assert np.allclose(book.sleeve_equity().sum(axis=1), book.equity)
+    assert book.sleeve_pnl().sum() == pytest.approx(book.equity.iloc[-1] - book.equity.iloc[0], rel=1e-6)
+    # no look-ahead: weights chosen on date d only use returns up to d
+    d = book.weight_history.index[3]
+    trunc = {n: r for n, r in book.sleeves.items()}
+    assert pm.target_weights(trunc, d).round(10).equals(book.weight_history.loc[d].round(10))

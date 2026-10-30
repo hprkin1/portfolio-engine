@@ -14,7 +14,9 @@ engine/
   portfolio.py   backtest_strategy() for one sleeve, PortfolioManager for a weighted book
   metrics.py     metrics from the equity curve (correct annualisation, no column averaging)
 strategies/      ac_momentum.py, obv_momentum.py, corr_reversion.py  (faithful ports)
+                 oil_spread.py (research only), oil_trend_carry.py (oil sleeve)
 scripts/run_baseline.py   re-baseline: shows the effect of each fix, plus out-of-sample
+scripts/research_oil*.py  oil spread / trend-carry / stabilisation research (reports/oil/)
 tests/           offline tests: no look-ahead, next-bar fills, costs, book accounting
 reports/         baseline.md, CSVs, equity chart
 ```
@@ -46,7 +48,16 @@ book = PortfolioManager([Sleeve(ACMomentum(), 1), Sleeve(OBVMomentum(), 2)],
 book.metrics_table(); book.contribution(); book.correlation()
 ```
 
-`ExecConfig(execution="next_open"|"next_close"|"same_close", intrabar_stops=True, costs="auto")`.
+`ExecConfig(execution="next_open"|"next_close"|"same_close", intrabar_stops=True, costs="auto", rebalance_band=0.0)`.
+
+Strategies can return **event signals** (entries/exits) or **target weights**
+(`Signals(target=...)`, for position sizing / vol targeting; only traded when the
+target moves by more than `rebalance_band`). `signal_symbols` are loaded for the
+strategy to read but never traded (e.g. CL=F feeding a USO strategy).
+
+Book weighting: `PortfolioManager(..., weighting="capital"|"inverse_vol", vol_lookback=252,
+rebalance="ME", max_weight=None, vol_floor=0.05, transfer_cost=0.001)`. In `inverse_vol`,
+`Sleeve.weight` is a risk budget and capital is re-split month-end by 1/trailing vol.
 `LEGACY` reproduces the old assumptions so you can compare.
 
 ## What was fixed (vs `Portfolio/`)
