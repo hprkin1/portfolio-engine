@@ -235,3 +235,31 @@ def test_stop_strategy_uses_stopsim():
     r = backtest_strategy(_flip_strategy(sl=0.02), 10_000, "2020-01-01", panel=panel)
     assert r.portfolio is None and "Exit Reason" in r.positions
     assert np.isfinite(r.equity).all() and r.metrics["Trades"] > 0
+
+
+def test_obv_defaults_unchanged():
+    """Default OBVMomentum must reproduce the original momentum_obv_strategy.py signals exactly."""
+    panel = synthetic_panel(n=500)
+    s = REGISTRY["OBVMomentum"](symbols=["AAA-USD"])
+    _, sig = s.run(panel)
+    c, v = panel["Close"]["AAA-USD"], panel["Volume"]["AAA-USD"]
+    obv = (np.sign(c.diff()) * v).cumsum().fillna(0)
+    mom = c.diff(75)
+    entries = (mom > 0) & (obv > obv.shift(1))
+    short_entries = mom < 0
+    for got, exp in ((sig.entries, entries), (sig.exits, short_entries),
+                     (sig.short_entries, short_entries), (sig.short_exits, entries)):
+        assert (got.iloc[:, 0] == exp).all()
+
+
+@pytest.mark.parametrize("kw", [dict(obv_mode="sma"), dict(symmetric=True), dict(long_only=True),
+                                dict(confirm_days=3), dict(obv_mode="none", lookbacks=(20, 60, 120)),
+                                dict(obv_mode="none", vol_target=0.5)])
+def test_obv_variants_no_lookahead(kw):
+    panel = synthetic_panel(n=600)
+    s = REGISTRY["OBVMomentum"](symbols=["AAA-USD"], **kw)
+    _, full = s.run(panel)
+    _, part = s.run({k: v.iloc[:400] for k, v in panel.items()})
+    for attr in ("entries", "exits", "short_entries", "short_exits", "target"):
+        if getattr(full, attr) is not None:
+            pd.testing.assert_frame_equal(getattr(part, attr), getattr(full, attr).iloc[:400], check_freq=False)

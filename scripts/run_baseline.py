@@ -45,7 +45,10 @@ OUT = ROOT / "reports"
 
 
 def strategies():
-    return [(ACMomentum, "2019-01-07"), (OBVMomentum, "2020-06-01"), (CorrReversion, "2016-01-01")]
+    # faithful ports: OBV without the 2% stop added on 2026-10-30
+    obv = lambda: OBVMomentum(sl_stop=None)
+    obv.__name__ = "OBVMomentum"
+    return [(ACMomentum, "2019-01-07"), (obv, "2020-06-01"), (CorrReversion, "2016-01-01")]
 
 
 def fmt(df: pd.DataFrame) -> str:

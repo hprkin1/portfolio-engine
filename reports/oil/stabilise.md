@@ -102,21 +102,21 @@ Selection score = neighbourhood-median Sharpe at 2× costs, averaged over USO+BN
 
 |    |    1 |    5 |   10 |
 |---:|-----:|-----:|-----:|
-|  1 | 0.54 | 0.67 | 0.53 |
-|  3 | 1.12 | 0.64 | 0.49 |
-|  5 | 0.66 | 0.55 | 0.39 |
-| 10 | 0.24 | 0.22 | 0.2  |
-| 20 | 0.32 | 0.37 | 0.36 |
+|  1 | 0.56 | 0.69 | 0.55 |
+|  3 | 1.14 | 0.66 | 0.51 |
+|  5 | 0.69 | 0.57 | 0.41 |
+| 10 | 0.27 | 0.24 | 0.23 |
+| 20 | 0.34 | 0.39 | 0.38 |
 
 **BNO OOS Sharpe (2× costs)**
 
 |    |    1 |    5 |   10 |
 |---:|-----:|-----:|-----:|
-|  1 | 0.43 | 0.58 | 0.45 |
-|  3 | 1.06 | 0.59 | 0.44 |
-|  5 | 0.63 | 0.51 | 0.36 |
-| 10 | 0.22 | 0.2  | 0.18 |
-| 20 | 0.31 | 0.36 | 0.35 |
+|  1 | 0.45 | 0.6  | 0.47 |
+|  3 | 1.09 | 0.61 | 0.46 |
+|  5 | 0.65 | 0.53 | 0.38 |
+| 10 | 0.25 | 0.22 | 0.21 |
+| 20 | 0.33 | 0.38 | 0.37 |
 
 ## A. Before vs after stabilising
 
@@ -134,14 +134,14 @@ Selection score = neighbourhood-median Sharpe at 2× costs, averaged over USO+BN
 | USO OOS after costs×3  |     3.18 |        13.03 |     0.31 |     -17.83 |     0.18 |        1.45 |        39.97 |
 | BNO IS before costs×1  |     6.01 |        14.47 |     0.48 |     -41.64 |     0.14 |       11.11 |        48.66 |
 | BNO IS before costs×2  |     4.16 |        14.49 |     0.36 |     -44.23 |     0.09 |       11.11 |        48.66 |
-| BNO OOS before costs×1 |     6.98 |        14.44 |     0.54 |     -38.01 |     0.18 |       11.21 |        41.12 |
-| BNO OOS before costs×2 |     5.25 |        14.45 |     0.43 |     -41.76 |     0.13 |       11.21 |        41.12 |
-| BNO OOS before costs×3 |     3.54 |        14.47 |     0.31 |     -45.28 |     0.08 |       11.21 |        41.12 |
+| BNO OOS before costs×1 |     7.31 |        14.45 |     0.56 |     -38.01 |     0.19 |       11.2  |        41.17 |
+| BNO OOS before costs×2 |     5.57 |        14.46 |     0.45 |     -41.76 |     0.13 |       11.2  |        41.17 |
+| BNO OOS before costs×3 |     3.85 |        14.48 |     0.33 |     -45.28 |     0.09 |       11.2  |        41.17 |
 | BNO IS after costs×1   |     8.84 |        14.34 |     0.67 |     -32    |     0.28 |        1.7  |        48.98 |
 | BNO IS after costs×2   |     8.48 |        14.34 |     0.64 |     -32.42 |     0.26 |        1.7  |        48.98 |
-| BNO OOS after costs×1  |     1.97 |        12.56 |     0.22 |     -24.95 |     0.08 |        1.25 |        36.75 |
-| BNO OOS after costs×2  |     1.73 |        12.56 |     0.2  |     -25.54 |     0.07 |        1.25 |        36.75 |
-| BNO OOS after costs×3  |     1.48 |        12.57 |     0.18 |     -26.12 |     0.06 |        1.25 |        36.75 |
+| BNO OOS after costs×1  |     2.27 |        12.57 |     0.24 |     -24.95 |     0.09 |        1.24 |        36.8  |
+| BNO OOS after costs×2  |     2.02 |        12.58 |     0.22 |     -25.54 |     0.08 |        1.24 |        36.8  |
+| BNO OOS after costs×3  |     1.77 |        12.58 |     0.2  |     -26.12 |     0.07 |        1.24 |        36.8  |
 
 ## B. Book weighting (BTC OBV + BTC AC + stabilised BNO oil)
 
@@ -151,41 +151,32 @@ capital = equal dollars, never rebalanced. inverse_vol = equal risk budget per s
 
 |                                 |   CAGR % |   Ann. Vol % |   Sharpe |   Sortino |   Max DD % |   Calmar |   Max DD Days |
 |:--------------------------------|---------:|-------------:|---------:|----------:|-----------:|---------:|--------------:|
-| BTC only, capital               |    62.81 |        42.09 |     1.37 |      1.98 |     -30.66 |     2.05 |           529 |
-| BTC only, inverse-vol           |    66.31 |        41.98 |     1.42 |      2.04 |     -30.05 |     2.21 |           507 |
-| BTC + oil, capital              |    53.82 |        38.35 |     1.31 |      1.9  |     -28.08 |     1.92 |           530 |
-| BTC + oil, inverse-vol          |    27.13 |        17.33 |     1.47 |      2.05 |     -15.27 |     1.78 |           461 |
-| BTC + oil, inverse-vol, cap 50% |    34.74 |        22.53 |     1.44 |      2.05 |     -17.95 |     1.94 |           509 |
+| BTC only, capital               |    66.65 |        41.69 |     1.43 |      2.14 |     -25.59 |     2.6  |           237 |
+| BTC only, inverse-vol           |    68.97 |        41.61 |     1.47 |      2.17 |     -25.41 |     2.71 |           240 |
+| BTC + oil, capital              |    57.37 |        38.08 |     1.38 |      2.05 |     -23.35 |     2.46 |           237 |
+| BTC + oil, inverse-vol          |    28.41 |        17.34 |     1.53 |      2.18 |     -13.96 |     2.04 |           382 |
+| BTC + oil, inverse-vol, cap 50% |    36.02 |        22.35 |     1.49 |      2.18 |     -17.06 |     2.11 |           360 |
 
-- BTC + oil, inverse-vol: average capital weights {'BTC OBV Momentum': 0.168, 'BTC AC Momentum': 0.17, 'Oil Trend/Carry BNO': 0.661}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.24, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 161.0, 'BTC AC Momentum': 130.7, 'Oil Trend/Carry BNO': 75.3}
-- BTC + oil, inverse-vol, cap 50%: average capital weights {'BTC OBV Momentum': 0.248, 'BTC AC Momentum': 0.253, 'Oil Trend/Carry BNO': 0.5}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.24, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 284.8, 'BTC AC Momentum': 213.5, 'Oil Trend/Carry BNO': 79.1}
+- BTC + oil, inverse-vol: average capital weights {'BTC OBV Momentum': 0.175, 'BTC AC Momentum': 0.169, 'Oil Trend/Carry BNO': 0.656}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.24, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 182.4, 'BTC AC Momentum': 132.7, 'Oil Trend/Carry BNO': 82.8}
+- BTC + oil, inverse-vol, cap 50%: average capital weights {'BTC OBV Momentum': 0.253, 'BTC AC Momentum': 0.247, 'Oil Trend/Carry BNO': 0.499}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.24, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 317.5, 'BTC AC Momentum': 213.6, 'Oil Trend/Carry BNO': 88.6}
 
 **From 2022-01-01**
 
 |                                 |   CAGR % |   Ann. Vol % |   Sharpe |   Sortino |   Max DD % |   Calmar |   Max DD Days |
 |:--------------------------------|---------:|-------------:|---------:|----------:|-----------:|---------:|--------------:|
-| BTC only, capital               |    38.18 |        35.51 |     1.09 |      1.58 |     -26.07 |     1.46 |           513 |
-| BTC only, inverse-vol           |    41.09 |        35.59 |     1.14 |      1.65 |     -26.88 |     1.53 |           506 |
-| BTC + oil, capital              |    29.78 |        28.79 |     1.05 |      1.53 |     -24.22 |     1.23 |           531 |
-| BTC + oil, inverse-vol          |    16.36 |        15.22 |     1.07 |      1.47 |     -17.29 |     0.95 |           461 |
-| BTC + oil, inverse-vol, cap 50% |    22.79 |        19.54 |     1.15 |      1.65 |     -17.95 |     1.27 |           509 |
+| BTC only, capital               |    43.37 |        35.35 |     1.19 |      1.79 |     -24.66 |     1.76 |           238 |
+| BTC only, inverse-vol           |    45.08 |        35.32 |     1.23 |      1.83 |     -25.22 |     1.79 |           240 |
+| BTC + oil, capital              |    34.25 |        29.17 |     1.15 |      1.73 |     -21.59 |     1.59 |           238 |
+| BTC + oil, inverse-vol          |    17.97 |        15.21 |     1.16 |      1.63 |     -17.04 |     1.06 |           382 |
+| BTC + oil, inverse-vol, cap 50% |    24.74 |        19.39 |     1.24 |      1.82 |     -17.06 |     1.45 |           360 |
 
-- BTC + oil, inverse-vol: average capital weights {'BTC OBV Momentum': 0.172, 'BTC AC Momentum': 0.171, 'Oil Trend/Carry BNO': 0.657}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.24, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 49.5, 'BTC AC Momentum': 39.0, 'Oil Trend/Carry BNO': 19.6}
-- BTC + oil, inverse-vol, cap 50%: average capital weights {'BTC OBV Momentum': 0.253, 'BTC AC Momentum': 0.254, 'Oil Trend/Carry BNO': 0.494}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.24, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 85.4, 'BTC AC Momentum': 62.0, 'Oil Trend/Carry BNO': 22.2}
+- BTC + oil, inverse-vol: average capital weights {'BTC OBV Momentum': 0.178, 'BTC AC Momentum': 0.17, 'Oil Trend/Carry BNO': 0.652}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.24, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 59.1, 'BTC AC Momentum': 40.4, 'Oil Trend/Carry BNO': 22.9}
+- BTC + oil, inverse-vol, cap 50%: average capital weights {'BTC OBV Momentum': 0.258, 'BTC AC Momentum': 0.249, 'Oil Trend/Carry BNO': 0.493}; latest {'BTC OBV Momentum': 0.27, 'BTC AC Momentum': 0.24, 'Oil Trend/Carry BNO': 0.49}; P&L contribution % of book {'BTC OBV Momentum': 100.5, 'BTC AC Momentum': 64.0, 'Oil Trend/Carry BNO': 26.4}
 
 Sleeve return correlation (from 2020-06):
 
 |                     |   BTC OBV Momentum |   BTC AC Momentum |   Oil Trend/Carry BNO |
 |:--------------------|-------------------:|------------------:|----------------------:|
-| BTC OBV Momentum    |               1    |              0.48 |                 -0.05 |
-| BTC AC Momentum     |               0.48 |              1    |                 -0.01 |
-| Oil Trend/Carry BNO |              -0.05 |             -0.01 |                  1    |
-
-
-## Correction (2026-10-30, later the same day)
-
-The book numbers in this file were regenerated after fixing a stop-loss bug in the engine (see
-`engine/stopsim.py` and the README "Correction" section). The fix only affects the BTC AC sleeve
-(the only strategy with a stop). The verdict text above was written before the fix; the tables
-above are current. Updated reading: risk weighting still cuts book vol and drawdown, but with the
-corrected (stronger) AC sleeve, adding oil now *lowers* book Sharpe rather than leaving it flat.
+| BTC OBV Momentum    |               1    |              0.5  |                 -0.06 |
+| BTC AC Momentum     |               0.5  |              1    |                 -0.01 |
+| Oil Trend/Carry BNO |              -0.06 |             -0.01 |                  1    |
