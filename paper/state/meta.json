@@ -12,41 +12,23 @@
   "Oil Trend/Carry BNO": "2026-10-29"
  },
  "drift_pct": {},
- "ticks": 1,
- "last_tick_utc": "2026-10-30T17:22:17+00:00",
+ "ticks": 2,
+ "last_tick_utc": "2026-10-30T17:31:07+00:00",
  "latest": {
   "BTC OBV Momentum": {
    "last_bar": "2026-10-29",
    "new_days": 0,
-   "next_open": {
-    "BTC-USD": "no new signal (keep current position)"
-   },
-   "position": {
-    "BTC-USD": "flat (paper trading starts 2026-10-31)"
-   },
-   "status": "updated"
+   "status": "up to date"
   },
   "BTC AC Momentum": {
    "last_bar": "2026-10-29",
    "new_days": 0,
-   "next_open": {
-    "BTC-USD": "short"
-   },
-   "position": {
-    "BTC-USD": "flat (paper trading starts 2026-10-31)"
-   },
-   "status": "updated"
+   "status": "up to date"
   },
   "Oil Trend/Carry BNO": {
    "last_bar": "2026-10-29",
    "new_days": 0,
-   "next_open": {
-    "BNO": "long 83% target"
-   },
-   "position": {
-    "BNO": "flat (paper trading starts 2026-10-31)"
-   },
-   "status": "updated"
+   "status": "up to date"
   }
  }
 }
