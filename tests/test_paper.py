@@ -76,3 +76,15 @@ def test_revised_history_shows_drift_but_record_stays(tmp_path):
     after = read_csv("equity", tmp_path)
     assert after.iloc[: len(before)].equals(before)
     assert load_meta(tmp_path)["drift_pct"]["OBV test"] != 0.0
+
+
+def test_up_to_date_keeps_orders_and_no_duplicate_decisions(tmp_path):
+    L = loader_factory()
+    tick(SLEEVES, CAP, state=tmp_path, now=at("2025-06-20"), loader=L)
+    first = load_meta(tmp_path)["latest"]["OBV test"]
+    tick(SLEEVES, CAP, state=tmp_path, now=at("2025-06-20", 6), loader=L)            # up to date
+    again = load_meta(tmp_path)["latest"]["OBV test"]
+    assert again["status"] == "up to date" and again["next_open"] == first["next_open"]
+    tick(SLEEVES, CAP, state=tmp_path, now=at("2025-06-20", 7), loader=L, force=True)  # forced re-run
+    o = read_csv("orders", tmp_path)
+    assert not o.duplicated(["decided_at_close", "sleeve"]).any()

@@ -147,12 +147,16 @@ def tick(sleeves, capital_by_sleeve: dict[str, float], state: Path = STATE, now:
         prev = meta["last_bar"].get(sl.name)
         info = {"last_bar": str(last_bar.date()), "new_days": 0}
         if prev is not None and pd.Timestamp(prev) >= last_bar and not force:
-            info["status"] = "up to date"
-            summary["sleeves"][sl.name] = info
+            kept = dict((meta.get("latest") or {}).get(sl.name) or info)   # keep last positions/orders
+            kept["status"] = "up to date"
+            summary["sleeves"][sl.name] = kept
             continue
         order = next_open_order(strat, panel)
-        new_orders.append({"decided_at_close": last_bar.date().isoformat(), "sleeve": sl.name,
-                           **{"order": "; ".join(f"{k}: {v}" for k, v in order.items())}})
+        decided = last_bar.date().isoformat()
+        logged = read_csv("orders", state)
+        if logged.empty or not ((logged.decided_at_close == decided) & (logged.sleeve == sl.name)).any():
+            new_orders.append({"decided_at_close": decided, "sleeve": sl.name,
+                               "order": "; ".join(f"{k}: {v}" for k, v in order.items())})
         info["next_open"] = order
         if last_bar >= pd.Timestamp(start):
             r = backtest_strategy(sl.make(), capital_by_sleeve[sl.name], start, config=sl.config, panel=panel)
