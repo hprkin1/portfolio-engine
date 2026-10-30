@@ -29,7 +29,7 @@ sys.path.insert(0, str(ROOT))
 warnings.filterwarnings("ignore")
 
 from engine import LEGACY, REALISTIC, ExecConfig, PortfolioManager, Sleeve, backtest_strategy  # noqa: E402
-from strategies import ACMomentum, CorrReversion, OBVMomentum  # noqa: E402
+from strategies import ACMomentum, OBVMomentum  # noqa: E402
 
 OOS_START = "2025-11-05"   # last commit to the original repo
 BOOK_START = "2020-06-01"  # first date all three original strategies were live
@@ -48,7 +48,9 @@ def strategies():
     # faithful ports: OBV without the 2% stop added on 2026-10-30
     obv = lambda: OBVMomentum(sl_stop=None)
     obv.__name__ = "OBVMomentum"
-    return [(ACMomentum, "2019-01-07"), (obv, "2020-06-01"), (CorrReversion, "2016-01-01")]
+    # the original WTI/Brent CorrReversion was retired 2026-10-30 (archived in Algorithmic-Trading-Repository/
+    # Development/portfolio_engine_research); its baseline numbers remain in reports/baseline.md
+    return [(ACMomentum, "2019-01-07"), (obv, "2020-06-01")]
 
 
 def fmt(df: pd.DataFrame) -> str:

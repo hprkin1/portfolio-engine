@@ -13,10 +13,9 @@ engine/
   strategy.py    BaseStrategy contract + Signals; strategies are pure signal logic
   portfolio.py   backtest_strategy() for one sleeve, PortfolioManager for a weighted book
   metrics.py     metrics from the equity curve (correct annualisation, no column averaging)
-strategies/      ac_momentum.py, obv_momentum.py (BTC), oil_trend_carry.py (oil sleeve),
-                 pairs_reversion.py (research), corr_reversion.py + oil_spread.py (retired)
+strategies/      ac_momentum.py, obv_momentum.py (BTC), oil_trend_carry.py (oil sleeve)
 scripts/run_baseline.py   re-baseline: shows the effect of each fix, plus out-of-sample
-scripts/research_oil*.py  oil spread / trend-carry / stabilisation research (reports/oil/)
+scripts/research_*.py     OBV improvement, oil trend-carry and stabilisation research (reports/obv, reports/oil)
 tests/           offline tests: no look-ahead, next-bar fills, costs, book accounting
 reports/         baseline.md, CSVs, equity chart
 ```
@@ -67,10 +66,10 @@ rebalance="ME", max_weight=None, vol_floor=0.05, transfer_cost=0.001)`. In `inve
 | `OBVMomentum` (BTC) | Live candidate · 2% stop added (reports/obv) |
 | `ACMomentum` (BTC) | Live candidate · 2% stop |
 | `OilTrendCarry` (USO/BNO) | Live candidate · modest, crash-protection role (reports/oil) |
-| `PairsReversion` (equity pairs v1) | Research · failed (reports/pairs) |
-| `PairsPortfolio` (systematic pairs v2) | Research · failed after costs (reports/pairs_v2) |
-| `CorrReversion` (WTI/Brent) | **Retired** · never trades on clean data |
-| `OilSpreadReversion` (Brent–WTI z-score) | Retired · research only |
+
+Failed and retired research (original WTI/Brent correlation, Brent–WTI spread, equity pairs v1 and v2,
+multi-asset ETF trend) lives with its results in
+[Algorithmic-Trading-Repository/Development/portfolio_engine_research](https://github.com/hprkin1/Algorithmic-Trading-Repository/tree/main/Development/portfolio_engine_research).
 
 ## Correction: stop-losses with next-open fills (2026-10-30)
 

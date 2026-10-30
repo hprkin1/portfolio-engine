@@ -1,10 +1,8 @@
 from .ac_momentum import ACMomentum
-from .corr_reversion import CorrReversion
 from .obv_momentum import OBVMomentum
-from .oil_spread import OilSpreadReversion
 from .oil_trend_carry import OilTrendCarry
-from .pairs_reversion import PairsReversion
-from .pairs_portfolio import PairsPortfolio
 
-REGISTRY = {cls.__name__: cls for cls in (ACMomentum, OBVMomentum, CorrReversion, OilSpreadReversion, OilTrendCarry, PairsReversion, PairsPortfolio)}
-__all__ = ["ACMomentum", "OBVMomentum", "CorrReversion", "OilSpreadReversion", "OilTrendCarry", "PairsReversion", "PairsPortfolio", "REGISTRY"]
+# Failed / retired strategies (pairs v1/v2, WTI/Brent correlation, Brent-WTI spread, multi-asset trend) live in
+# Algorithmic-Trading-Repository/Development/portfolio_engine_research.
+REGISTRY = {cls.__name__: cls for cls in (ACMomentum, OBVMomentum, OilTrendCarry)}
+__all__ = ["ACMomentum", "OBVMomentum", "OilTrendCarry", "REGISTRY"]
