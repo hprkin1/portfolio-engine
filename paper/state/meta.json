@@ -12,8 +12,8 @@
   "Oil Trend/Carry BNO": "2026-10-29"
  },
  "drift_pct": {},
- "ticks": 4,
- "last_tick_utc": "2026-10-30T17:32:02+00:00",
+ "ticks": 5,
+ "last_tick_utc": "2026-10-30T17:33:23+00:00",
  "latest": {
   "BTC OBV Momentum": {
    "last_bar": "2026-10-29",
