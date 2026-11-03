@@ -31,13 +31,15 @@ jobs:
         run: pip install -r requirements.txt
       - name: Paper tick
         run: python -m paper.tick
-      - name: Commit ledger
+      - name: Build results page (site/, published by Netlify)
+        run: python scripts/build_site.py
+      - name: Commit ledger and page
         run: |
           git config user.name "paper-tick-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add paper/state
+          git add paper/state site
           if git diff --cached --quiet; then echo "no changes"; else
-            git commit -m "paper: daily tick $(date -u +%F)"
+            git commit -m "paper: daily tick + results page $(date -u +%F)"
             git pull --rebase origin main
             git push
           fi

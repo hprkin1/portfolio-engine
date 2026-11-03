@@ -1,0 +1,11 @@
+{
+  "title": "Portfolio Engine: live paper trading",
+  "owner": "Henry",
+  "back_link_url": "",
+  "back_link_label": "Back to my website",
+  "writeup_url": "",
+  "github_url": "https://github.com/hprkin1/portfolio-engine",
+  "accent": "#1F5FBF",
+  "font": "Inter, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif",
+  "backtest_start": "2020-06-01"
+}

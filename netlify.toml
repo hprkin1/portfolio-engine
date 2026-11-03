@@ -1,0 +1,6 @@
+# Netlify only publishes the pre-built static page in site/ (built daily by .github/workflows/paper_tick.yml).
+# base = "site" keeps Netlify away from requirements.txt, so it doesn't try to install the Python stack.
+[build]
+  base = "site"
+  publish = "."
+  command = ""

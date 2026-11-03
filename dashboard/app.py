@@ -137,7 +137,7 @@ tab_over, tab_bt, tab_rob, tab_paper = st.tabs(["Overview", "Backtest", "Robustn
 # ================= OVERVIEW =================
 with tab_over:
     eq_rows = ledger.read_csv("equity")
-    pb = paper_book(eq_rows)
+    pb = paper_book(eq_rows, (meta or {}).get("capital"))
     c1, c2, c3, c4 = st.columns(4)
     if meta:
         start = meta["start"]

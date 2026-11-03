@@ -37,3 +37,11 @@ python -m paper.tick            # daily update (no-op if no new completed bars)
 python -m paper.tick --force    # re-run anyway
 python -m paper.tick --reset    # archive this book and start a fresh one tomorrow
 ```
+
+## Public results page (Netlify)
+
+After each tick the workflow runs `python scripts/build_site.py`, which writes a static page to `site/index.html`
+(paper return, positions, next orders, recent trades, backtest context) and commits it. Netlify is connected to
+this repo and republishes `site/` on every commit (`netlify.toml` sets the base folder to `site/`, so Netlify
+never tries to install the Python stack). Colours, font and the link back to the personal website are in
+`site_config.json`.

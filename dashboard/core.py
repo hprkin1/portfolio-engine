@@ -163,13 +163,20 @@ def book_drawdown(equity: pd.Series) -> pd.Series:
 
 
 # ---------- paper ----------
-def paper_book(equity_rows: pd.DataFrame) -> pd.DataFrame:
-    """Wide frame of sleeve equity (forward-filled across calendars) + BOOK column."""
+def paper_book(equity_rows: pd.DataFrame, capital: dict[str, float] | None = None) -> pd.DataFrame:
+    """Wide frame of sleeve equity (forward-filled across calendars) + BOOK column.
+
+    A sleeve with no row yet (e.g. an ETF on a weekend before its first trading day) is still holding its
+    starting capital, so it is filled with `capital[sleeve]` rather than left out of the BOOK total."""
     if equity_rows.empty:
         return pd.DataFrame()
     w = equity_rows.pivot_table(index="date", columns="sleeve", values="equity")
     w.index = pd.to_datetime(w.index)
     w = w.sort_index().ffill()
+    if capital:
+        for c in w.columns:
+            if c in capital:
+                w[c] = w[c].fillna(capital[c])
     w["BOOK"] = w.sum(axis=1, min_count=1)
     return w
 

@@ -40,3 +40,11 @@ def test_specs_build_with_defaults():
     for k in SPECS:
         s = SPECS[k].build(defaults(k))
         assert s.symbols
+
+
+def test_paper_book_counts_sleeves_before_their_first_day():
+    rows = pd.DataFrame({"date": ["2026-10-31", "2026-11-01", "2026-11-02", "2026-11-02"],
+                         "sleeve": ["btc", "btc", "btc", "etf"], "equity": [10_000, 10_100, 10_050, 9_900]})
+    b = paper_book(rows, {"btc": 10_000, "etf": 10_000})
+    assert b.loc["2026-10-31", "BOOK"] == 20_000          # ETF not trading yet -> still its starting capital
+    assert b.loc["2026-11-02", "BOOK"] == 10_050 + 9_900
