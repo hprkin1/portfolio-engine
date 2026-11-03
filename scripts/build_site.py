@@ -32,7 +32,8 @@ from paper.config import CAPITAL, SLEEVES, sleeve_capital  # noqa: E402
 PLOTLY_JS = "https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"
 NICE = {"BTC OBV Momentum": "Bitcoin OBV momentum", "BTC AC Momentum": "Bitcoin AC momentum",
         "Oil Trend/Carry BNO": "Oil trend + carry (BNO)", "BOOK": "Portfolio"}
-COLOURS = {"BTC OBV Momentum": "#8FA9D6", "BTC AC Momentum": "#B9C6DE", "Oil Trend/Carry BNO": "#D9A441"}
+T: dict = {}            # theme, from site_config.json (set in build)
+COLOURS: dict = {}
 
 
 def esc(x) -> str:
@@ -41,11 +42,13 @@ def esc(x) -> str:
 
 def fig_html(fig, div_id: str) -> str:
     fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                      font=dict(family="inherit", size=13, color="#4a5568"),
+                      font=dict(family=T["mono"], size=12, color=T["text_secondary"]),
                       margin=dict(l=10, r=10, t=10, b=10), hovermode="x unified",
-                      legend=dict(orientation="h", y=-0.18, x=0))
-    fig.update_xaxes(showgrid=False, linecolor="#d5dae1")
-    fig.update_yaxes(gridcolor="#edf0f4", zeroline=False)
+                      hoverlabel=dict(bgcolor=T["card_hover"], bordercolor=T["border_strong"],
+                                      font=dict(family=T["mono"], color=T["text"])),
+                      legend=dict(orientation="h", y=-0.18, x=0, font=dict(family=T["sans"], size=13)))
+    fig.update_xaxes(showgrid=False, linecolor=T["border_strong"])
+    fig.update_yaxes(gridcolor=T["border"], zeroline=False)
     return fig.to_html(full_html=False, include_plotlyjs=False, div_id=div_id,
                        config={"displayModeBar": False, "responsive": True})
 
@@ -64,7 +67,9 @@ def build(out: Path, cfg: dict) -> Path:
     pb = paper_book(eq_rows, caps)
     start = meta.get("start", "–")
     now = datetime.now(timezone.utc)
-    accent = cfg["accent"]
+    T.clear(); T.update(cfg["theme"])
+    COLOURS.clear(); COLOURS.update(T["series"])
+    accent = T["accent"]
 
     # ---- paper numbers ----
     if not pb.empty:
@@ -92,7 +97,7 @@ def build(out: Path, cfg: dict) -> Path:
         r = 100 * (pb["BOOK"] / sum(caps.values()) - 1)
         fig.add_scatter(x=pb.index, y=r, name="Portfolio", mode="lines+markers" if len(pb) < 15 else "lines",
                         line=dict(width=3.2, color=accent), hovertemplate="%{y:+.2f}%")
-        fig.add_hline(y=0, line_color="#c3cad5", line_width=1)
+        fig.add_hline(y=0, line_color=T["border_strong"], line_width=1)
         fig.update_layout(height=340)
         fig.update_yaxes(ticksuffix="%")
         fig.update_xaxes(tickformat="%d %b", dtick=86_400_000 if len(pb) <= 21 else None)
@@ -109,9 +114,9 @@ def build(out: Path, cfg: dict) -> Path:
     fig.add_scatter(x=b.index, y=b, name="Portfolio", mode="lines", line=dict(width=2.8, color=accent),
                     hovertemplate="%{y:.2f}×")
     if start != "–":
-        fig.add_vline(x=pd.Timestamp(start), line_dash="dot", line_color="#9aa3af")
+        fig.add_vline(x=pd.Timestamp(start), line_dash="dot", line_color=T["text_muted"])
         fig.add_annotation(x=pd.Timestamp(start), y=1, yref="paper", text="paper trading starts", showarrow=False,
-                           xanchor="right", font=dict(size=11, color="#6b7280"))
+                           xanchor="right", font=dict(size=11, color=T["text_muted"]))
     ticks = [v for v in (0.5, 1, 2, 5, 10, 20, 50, 100) if v <= float(max(se.max().max() / se.iloc[0].min(), b.max())) * 1.5]
     fig.update_yaxes(type="log", tickvals=ticks, ticktext=[f"{v:g}×" for v in ticks])
     fig.update_layout(height=360)
@@ -146,11 +151,11 @@ def build(out: Path, cfg: dict) -> Path:
                     "5 days of paper trading.")
 
     links = []
-    if cfg.get("back_link_url"):
-        links.append(f"<a href='{esc(cfg['back_link_url'])}'>← {esc(cfg['back_link_label'])}</a>")
+    brand = (f"<a class='brand' href='{esc(cfg['back_link_url'])}'>← {esc(cfg['back_link_label'])}</a>"
+             if cfg.get("back_link_url") else "<span></span>")
     if cfg.get("writeup_url"):
         links.append(f"<a href='{esc(cfg['writeup_url'])}'>Project write-up</a>")
-    links.append(f"<a href='{esc(cfg['github_url'])}'>Code on GitHub</a>")
+    links.append(f"<a href='{esc(cfg['github_url'])}'>Code on GitHub ↗</a>")
 
     page = f"""<!DOCTYPE html>
 <html lang="en">
@@ -159,44 +164,65 @@ def build(out: Path, cfg: dict) -> Path:
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(cfg['title'])}</title>
 <meta name="description" content="Daily-updated paper trading results of {esc(cfg['owner'])}'s Portfolio Engine: two Bitcoin momentum strategies and an oil trend strategy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="{T['fonts_css']}" rel="stylesheet">
 <script src="{PLOTLY_JS}"></script>
 <style>
-  :root {{ --accent: {accent}; --text: #1f2933; --muted: #6b7280; --line: #e5e8ee; --bg: #ffffff; --card: #f7f8fb;
-          --good: #1e7d4f; --bad: #b42318; --font: {cfg['font']}; }}
+  :root {{ --bg: {T['bg']}; --card: {T['card']}; --card-hover: {T['card_hover']}; --border: {T['border']};
+          --border-strong: {T['border_strong']}; --text: {T['text']}; --text-2: {T['text_secondary']};
+          --muted: {T['text_muted']}; --accent: {accent}; --accent-soft: {T['accent_soft']}; --good: {T['good']};
+          --bad: {T['bad']}; --serif: {T['serif']}; --sans: {T['sans']}; --mono: {T['mono']}; }}
   * {{ box-sizing: border-box; }}
-  body {{ margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.55; }}
-  .wrap {{ max-width: 1040px; margin: 0 auto; padding: 28px 20px 64px; }}
-  nav {{ display: flex; gap: 20px; flex-wrap: wrap; font-size: 14px; margin-bottom: 28px; }}
-  nav a, a {{ color: var(--accent); text-decoration: none; }}
-  nav a:hover, a:hover {{ text-decoration: underline; }}
-  h1 {{ font-size: clamp(28px, 4vw, 40px); line-height: 1.15; margin: 0 0 10px; letter-spacing: -0.02em; }}
-  h2 {{ font-size: 21px; margin: 44px 0 6px; letter-spacing: -0.01em; }}
-  .lede {{ color: var(--muted); font-size: 17px; max-width: 760px; margin: 0; }}
-  .stamp {{ color: var(--muted); font-size: 13px; margin-top: 12px; }}
-  .kpis {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 28px; }}
-  .kpi {{ background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }}
-  .kpi .label {{ font-size: 13px; color: var(--muted); }}
-  .kpi .value {{ font-size: 26px; font-weight: 650; margin-top: 4px; letter-spacing: -0.01em; }}
+  html {{ background: var(--bg); }}
+  body {{ margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.6;
+          -webkit-font-smoothing: antialiased; }}
+  .wrap {{ max-width: 1040px; margin: 0 auto; padding: 28px 22px 72px; }}
+  a {{ color: var(--accent); text-decoration: none; }}
+  a:hover {{ color: {T.get('accent_strong', accent)}; text-decoration: underline; }}
+  nav {{ display: flex; justify-content: space-between; align-items: center; gap: 18px; flex-wrap: wrap;
+         font-family: var(--mono); font-size: 12px; letter-spacing: .04em; text-transform: uppercase;
+         padding-bottom: 18px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }}
+  nav .links {{ display: flex; gap: 22px; flex-wrap: wrap; }}
+  nav .brand {{ color: var(--text-2); }}
+  .eyebrow {{ font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+              color: var(--accent); display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }}
+  .live {{ display: inline-flex; align-items: center; gap: 6px; color: var(--good); background: rgba(143,179,140,.14);
+           border-radius: 999px; padding: 3px 10px; font-size: 11px; }}
+  .live .dot {{ width: 6px; height: 6px; border-radius: 50%; background: var(--good); }}
+  h1 {{ font-family: var(--serif); font-weight: 400; font-size: clamp(34px, 5vw, 54px); line-height: 1.08;
+        margin: 0 0 16px; letter-spacing: -0.02em; }}
+  h2 {{ font-family: var(--serif); font-weight: 400; font-size: 28px; margin: 56px 0 8px; letter-spacing: -0.01em; }}
+  .lede {{ color: var(--text-2); font-size: 18px; max-width: 760px; margin: 0; }}
+  .stamp {{ color: var(--muted); font-family: var(--mono); font-size: 12px; margin-top: 16px; }}
+  .kpis {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 34px; }}
+  .kpi {{ background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }}
+  .kpi .label {{ font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }}
+  .kpi .value {{ font-family: var(--serif); font-size: 32px; margin-top: 6px; letter-spacing: -0.01em; }}
   .pos {{ color: var(--good); }} .neg {{ color: var(--bad); }}
-  .note {{ color: var(--muted); font-size: 15px; max-width: 800px; margin: 0 0 12px; }}
-  .table-wrap {{ overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }}
+  .note {{ color: var(--text-2); font-size: 15.5px; max-width: 780px; margin: 0 0 16px; }}
+  .note b {{ color: var(--text); font-weight: 600; }}
+  .table-wrap {{ overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }}
   table {{ width: 100%; border-collapse: collapse; font-size: 14px; }}
-  th, td {{ text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }}
-  th {{ font-weight: 600; color: var(--muted); background: var(--card); font-size: 13px; }}
+  th, td {{ text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border); white-space: nowrap; }}
+  th {{ font-family: var(--mono); font-weight: 400; font-size: 11px; letter-spacing: .06em; text-transform: uppercase;
+        color: var(--muted); }}
   tr:last-child td {{ border-bottom: 0; }}
-  td.num, th.num {{ text-align: right; font-variant-numeric: tabular-nums; }}
-  .chart {{ border: 1px solid var(--line); border-radius: 12px; padding: 12px 8px 4px; }}
-  .steps {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 14px; }}
-  .step {{ border-top: 3px solid var(--accent); padding-top: 10px; font-size: 14px; }}
-  .step b {{ display: block; margin-bottom: 4px; font-size: 15px; }}
-  footer {{ margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }}
-  @media (max-width: 760px) {{ .kpis, .steps {{ grid-template-columns: repeat(2, 1fr); }} }}
+  td.num, th.num {{ text-align: right; font-family: var(--mono); font-size: 13px; }}
+  .chart {{ border: 1px solid var(--border); border-radius: 14px; padding: 14px 8px 6px; background: var(--card); }}
+  .steps {{ display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 16px; }}
+  .step {{ border-top: 1px solid var(--accent); padding-top: 12px; font-size: 14.5px; color: var(--text-2); }}
+  .step b {{ display: block; margin-bottom: 4px; font-family: var(--mono); font-weight: 400; font-size: 12px;
+             letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }}
+  footer {{ margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 13px; }}
+  @media (max-width: 760px) {{ .kpis, .steps {{ grid-template-columns: repeat(2, 1fr); }} .kpi .value {{ font-size: 26px; }} }}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav>{' '.join(links)}</nav>
-  <h1>{esc(cfg['title'])}</h1>
+  <nav>{brand}<span class="links">{' '.join(links)}</span></nav>
+  <div class="eyebrow">Portfolio Engine <span class="live"><span class="dot"></span>Live paper trading</span></div>
+  <h1>How my strategies are doing, updated daily</h1>
   <p class="lede">Three trading strategies (two on Bitcoin, one on Brent crude oil) running on simulated money since
   {esc(start)}. They were selected by testing eight ideas against rules fixed in advance; this page shows how they do
   on data that didn't exist when they were built.</p>
@@ -208,7 +234,7 @@ def build(out: Path, cfg: dict) -> Path:
     <div class="kpi"><div class="label">Return since start</div>
       <div class="value {'pos' if ret > 0 else 'neg' if ret < 0 else ''}">{ret:+.2f}%</div></div>
     <div class="kpi"><div class="label">Days live</div><div class="value">{days}</div></div>
-    <div class="kpi"><div class="label">Starting capital (simulated)</div><div class="value">${sum(caps.values()):,.0f}</div></div>
+    <div class="kpi"><div class="label">Simulated capital</div><div class="value">${sum(caps.values()):,.0f}</div></div>
   </div>
 
   <h2>Paper performance</h2>
