@@ -3,3 +3,5 @@ date,sleeve,symbol,action,price,size,reason
 2026-11-01,BTC OBV Momentum,BTC-USD,Buy,77473.467375,,signal
 2026-11-02,Oil Trend/Carry BNO,BNO,Buy,67.62379133605957,122.1972923836173,signal
 2026-11-03,Oil Trend/Carry BNO,BNO,Sell,65.81707347488404,42.6584035019217,signal
+2026-11-04,BTC OBV Momentum,BTC-USD,Sell (exit long),75848.1119725,,stop
+2026-11-04,BTC AC Momentum,BTC-USD,Buy (cover short),78781.54624382812,,stop

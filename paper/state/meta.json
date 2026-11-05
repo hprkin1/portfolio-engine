@@ -7,51 +7,51 @@
   "Oil Trend/Carry BNO": 10000.0
  },
  "last_bar": {
-  "BTC OBV Momentum": "2026-11-02",
-  "BTC AC Momentum": "2026-11-02",
-  "Oil Trend/Carry BNO": "2026-11-03"
+  "BTC OBV Momentum": "2026-11-04",
+  "BTC AC Momentum": "2026-11-04",
+  "Oil Trend/Carry BNO": "2026-11-04"
  },
  "drift_pct": {
-  "BTC OBV Momentum": 0.0,
-  "BTC AC Momentum": 0.0,
+  "BTC OBV Momentum": -0.0,
+  "BTC AC Momentum": -0.0,
   "Oil Trend/Carry BNO": -0.0
  },
- "ticks": 11,
- "last_tick_utc": "2026-11-04T06:55:49+00:00",
+ "ticks": 12,
+ "last_tick_utc": "2026-11-05T07:17:08+00:00",
  "latest": {
   "BTC OBV Momentum": {
-   "last_bar": "2026-11-02",
+   "last_bar": "2026-11-04",
    "new_days": 2,
    "next_open": {
-    "BTC-USD": "no new signal (keep current position)"
+    "BTC-USD": "long"
    },
-   "equity": 9892.29,
+   "equity": 9780.42,
    "position": {
-    "BTC-USD": "long 100%"
+    "BTC-USD": "flat"
    },
-   "status": "up to date"
+   "status": "updated"
   },
   "BTC AC Momentum": {
-   "last_bar": "2026-11-02",
+   "last_bar": "2026-11-04",
    "new_days": 2,
    "next_open": {
     "BTC-USD": "short"
    },
-   "equity": 10057.48,
+   "equity": 9779.8,
    "position": {
-    "BTC-USD": "short 100%"
+    "BTC-USD": "flat"
    },
-   "status": "up to date"
+   "status": "updated"
   },
   "Oil Trend/Carry BNO": {
-   "last_bar": "2026-11-03",
+   "last_bar": "2026-11-04",
    "new_days": 1,
    "next_open": {
-    "BNO": "long 54% target"
+    "BNO": "long 40% target"
    },
-   "equity": 9796.99,
+   "equity": 9342.82,
    "position": {
-    "BNO": "long 54%"
+    "BNO": "long 51%"
    },
    "status": "updated"
   }
